@@ -1,0 +1,21 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/b300_nmask.yaml # dataset usage configuration
+
+# Shared-Gaussian reflection on scene B, no monocular normal prior on GT mirror pixels only (2026-10-18). Same as
+# envgs_b300_nmask (StableNormal elsewhere; masks == 3 pixels stored black and skipped via norm_ignore_zero) plus
+# shared_reflection.
+# Experiment record: ~/SMBC/EnvGS/EnvGS/mirror_lidar/experiments/2026-10-18_mirror_b_shared_normal_ablation.json
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True # trace self.pcd with override colour SH2RGB(_features_dc); env Gaussians unused
+    supervisor_cfg:
+        perc_loss_start_iter: 45000 # less iterations for faster training
+        norm_ignore_zero: True
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

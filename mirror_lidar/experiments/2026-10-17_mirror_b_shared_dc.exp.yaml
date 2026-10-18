@@ -1,0 +1,21 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/b300_gtnorm.yaml # dataset usage configuration
+
+# Shared-Gaussian reflection on scene B (2026-10-17). Identical to envgs_b300_gtnorm (GT mirror-plane normal on
+# masks == 3 pixels, StableNormal elsewhere) except that reflected rays are traced against the base Gaussians
+# instead of the environment Gaussians, with hit colour = SH DC term (view independent), one bounce.
+# Single-variable comparison against envgs_b300_gtnorm: same data, schedule, losses, seed defaults, 60k iters.
+# Experiment record: ~/SMBC/EnvGS/EnvGS/mirror_lidar/experiments/2026-10-17_mirror_b_shared_dc.json
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True # trace self.pcd with override colour SH2RGB(_features_dc); env Gaussians unused
+    supervisor_cfg:
+        perc_loss_start_iter: 45000 # less iterations for faster training (same as envgs_b300_gtnorm)
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

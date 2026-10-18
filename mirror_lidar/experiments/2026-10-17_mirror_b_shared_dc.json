@@ -1,0 +1,135 @@
+{
+  "id": "2026-10-17_mirror_b_shared_dc",
+  "question": "Can EnvGS reconstruct a mirror scene with ONE set of Gaussians (reflected rays query the base scene Gaussians) instead of separate environment Gaussians, when the mirror normal is correct?",
+  "hypothesis": "EnvGS supp. B.3 reports a shared set fails to converge because early geometry is wrong. With GT mirror normals (stand-in for LiDAR plane fits) geometry is right from the start, so a shared set may converge; it may also give sharper reflections (base Gaussians are denser than env Gaussians).",
+  "started": "2026-10-17 20:40:35 JST",
+  "status": "finished",
+  "run": {
+    "exp_name": "envgs/mirror_b/envgs_b300_gtnorm_shared",
+    "exp_config": "~/SMBC/EnvGS/EnvGS/configs/exps/envgs/mirror_b/envgs_b300_gtnorm_shared.yaml",
+    "exp_config_copy": "2026-10-17_mirror_b_shared_dc.exp.yaml",
+    "resolved_config_copy": "2026-10-17_mirror_b_shared_dc.resolved.yaml",
+    "command": "CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_gtnorm_shared.yaml exp_name=envgs/mirror_b/envgs_b300_gtnorm_shared",
+    "cwd": "~/SMBC/EnvGS/EnvGS",
+    "conda_env": "envgs (torch 2.3.1+cu118)",
+    "gpu": "GPU0, RTX 3090, driver 570.153.02",
+    "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_gtnorm_shared_train.log",
+    "pid_file": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_gtnorm_shared.pid",
+    "trained_model": "~/SMBC/EnvGS/EnvGS/data/trained_model/envgs/mirror_b/envgs_b300_gtnorm_shared/",
+    "result": "~/SMBC/EnvGS/EnvGS/data/result/envgs/mirror_b/envgs_b300_gtnorm_shared/"
+  },
+  "control": {
+    "exp_name": "envgs/mirror_b/envgs_b300_gtnorm",
+    "resolved_config_copy": "2026-10-17_mirror_b_shared_dc.control_gtnorm.resolved.yaml",
+    "resolved_config_diff": "exactly one line: model_cfg.sampler_cfg.shared_reflection: true (checked with diff after renaming exp_name)",
+    "control_results_val38": {
+      "psnr": 36.15,
+      "psnr_mirror": 26.72,
+      "psnr_opaque": 40.75,
+      "mirror_depth_on_plane_frac": 1.0,
+      "mirror_depth_mae_m": 0.005,
+      "specular_weight_mirror": 0.311,
+      "mirrorback_psnr": 29.81
+    },
+    "other_reference_runs": {
+      "envgs_b300 (StableNormal)": {
+        "psnr": 34.71,
+        "psnr_mirror": 25.94,
+        "mirror_depth_on_plane_frac": 0.919
+      },
+      "envgs_b300_nmask": {
+        "psnr": 35.16,
+        "psnr_mirror": 25.0,
+        "mirror_depth_on_plane_frac": 0.905
+      }
+    }
+  },
+  "the_single_change": {
+    "flag": "model_cfg.sampler_cfg.shared_reflection = True",
+    "reflected_ray_target": "base Gaussians self.pcd (2DGS surfels), via the same OptiX tracer (diffop.render_gaussians, start_from_first=False, max_trace_depth=0)",
+    "hit_colour": "override_color = clamp_min(SH2RGB(_features_dc), 0) = 0.28209479 * dc + 0.5, view independent; higher SH bands ignored on the reflected path",
+    "bounces": 1,
+    "ray_start_offset": "tracer constant START_OFFSET = 0.06 (scene units = metres) skips the mirror's own surfels; unchanged from upstream",
+    "miss_colour": "env_bg_color = 0 (black), unchanged",
+    "compositing": "unchanged: rgb = (1 - s) * rgb_base + s * rgb_reflected, s = rasterised specular weight",
+    "gradients": "reflection loss back-propagates into all parameters of the hit base Gaussians (DC colour, xyz, scale, rotation, opacity) and into the mirror pixel's normal/depth/specular as before",
+    "densification": "base Gaussians densify only from rasterised camera-view gradients; reflected-path gradients are not added to densification statistics (reflection cannot spawn new Gaussians)",
+    "env_gaussians": "still constructed from envs/points3D.ply and in the optimizer (checkpoint layout) but never rendered; update_env_gaussians returns early, so no densify / opacity reset",
+    "warmup": "render_reflection_start_iter = 3000 (upstream default, same as control): first 3000 iters train the base Gaussians only"
+  },
+  "code_changes": {
+    "repo": "~/SMBC/EnvGS/EnvGS, HEAD 09993470ae76854e2dae1118374031c9b32891ac (uncommitted working tree)",
+    "submodule diff-surfel-tracing": "9b86cbf9da9e746f091e01ca2981249ec4c23855 + local validationMode OFF (pre-existing, see HANDOFF)",
+    "files": [
+      "easyvolcap/models/samplers/envgs_sampler.py (shared_reflection flag + branch)",
+      "easyvolcap/utils/optix_utils.py (getattr for undefined pcd.feature_splatting, needed to pass override_color for base Gaussians)"
+    ],
+    "patch": "2026-10-17_mirror_b_shared_dc.patch",
+    "patch_note": "patch also contains no other edits; envgs_supervisor.py has an older pre-existing modification (norm_ignore_zero) not part of this experiment",
+    "default_behaviour": "shared_reflection defaults to False; all earlier configs behave exactly as before"
+  },
+  "data": {
+    "blender_dataset": "~/SMBC/blender/project/proj_indoor_mirror_b/dataset_b300 (300 frames, blender commit ab444bd)",
+    "easyvolcap_data_root": "data/datasets/mirror_b/b300_gtnorm (images/poses/sparse symlinked to b300; normals: StableNormal with masks==3 pixels replaced by GT mirror normal R_w2c @ (1,0,0))",
+    "poses": "GT (COLMAP model from GT poses, reprojection 0.43 px)",
+    "split": "every 8th frame is val -> 38 val views, 262 train",
+    "iterations": "120 epochs x 500 = 60000",
+    "spatial_scale": 1.9667
+  },
+  "evaluation_plan": {
+    "script": "~/SMBC/EnvGS/EnvGS/mirror_lidar/tools/eval_mirror_b_run.sh b300_gtnorm_shared dataset_b300 <gpu>",
+    "per_object": "per-object PSNR / depth MAE / specular weight (same script as used for the three earlier runs)",
+    "metrics": [
+      "PSNR overall / opaque / mirror",
+      "fraction of mirror pixels whose depth is on the mirror plane",
+      "mirror depth MAE",
+      "SPECULAR weight on mirror",
+      "MirrorBack PSNR and depth",
+      "anything grown behind the mirror (view from the back side in the viewer)",
+      "visual sharpness of the mirror image, frame 88"
+    ],
+    "convergence_check": "training PSNR / loss curves vs control around iter 3000 (reflection switched on) and later"
+  },
+  "results": {
+    "eval": "eval_mirror_b_run.sh b300_gtnorm_shared dataset_b300 0 -> data/result/envgs/mirror_b/envgs_b300_gtnorm_shared/eval_gt.log; per-object: ~/SMBC/EnvGS/EnvGS/mirror_lidar/tools/per_obj_mirror_b.py",
+    "val38": {
+      "psnr": 36.56,
+      "ssim": 0.9533,
+      "lpips": 0.0645,
+      "psnr_opaque": 39.54,
+      "psnr_mirror": 28.83,
+      "mirror_depth_on_plane_frac": 0.999,
+      "mirror_depth_mae_m": 0.004,
+      "mirror_depth_median_m": 0.001,
+      "opaque_depth_mae_m": 0.255,
+      "specular_weight_mirror": 0.664,
+      "specular_weight_other": 0.009,
+      "mirrorback_psnr": 29.3,
+      "mirrorback_depth_mae_m": 0.052,
+      "ceiling_depth_mae_m": 0.738
+    },
+    "control_val38_same_metrics": {
+      "psnr": 36.15,
+      "ssim": 0.9424,
+      "lpips": 0.0945,
+      "psnr_opaque": 40.75,
+      "psnr_mirror": 26.72,
+      "mirror_depth_on_plane_frac": 1.0,
+      "mirror_depth_mae_m": 0.005,
+      "opaque_depth_mae_m": 0.235,
+      "specular_weight_mirror": 0.311,
+      "specular_weight_other": 0.034,
+      "mirrorback_psnr": 29.81,
+      "ceiling_depth_mae_m": 0.659
+    },
+    "summary": "Converged. Mirror PSNR +2.1 dB (26.72 -> 28.83), LPIPS 0.0945 -> 0.0645; mirror image visibly sharp (frame 88 crop) where env-GS version is blurry. Mirror geometry stays correct (99.9% on plane). Specular weight on mirror doubles (0.31 -> 0.66) and drops elsewhere (0.034 -> 0.009). Cost: opaque PSNR -1.2 dB (40.75 -> 39.54), mostly walls / picture frame / cabinet (likely reflection gradients pulling DC colours of directly seen surfels). Ceiling depth still ~0.7 m off in both.",
+    "figure": "2026-10-17_mirror_b_shared_dc.frame088_crop.jpg (GT | gtnorm env GS | shared DC)"
+  },
+  "checks": [
+    {
+      "time": "2026-10-17 ~20:55 JST",
+      "note": "passed iter 3000 (reflection on, shared path active) with no error; step ~3900 train PSNR 28.4 vs control 30.1 at same step. Already 1.0 dB lower at step 2900 before the reflection is switched on (identical code path there), so part of the gap is run-to-run noise; compare final eval, not early train PSNR."
+    }
+  ],
+  "finished": "2026-10-18 07:55 JST (epoch 119, 60k iters, no error)"
+}

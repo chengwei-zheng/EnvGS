@@ -1,0 +1,19 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/b300.yaml # dataset usage configuration
+
+# Shared-Gaussian reflection on scene B with the plain StableNormal prior everywhere, mirror included (2026-10-18).
+# Same as envgs_b300 (env GS baseline) plus shared_reflection; same as envgs_b300_gtnorm_shared except data = b300.
+# Experiment record: ~/SMBC/EnvGS/experiments/2026-10-18_mirror_b_shared_normal_ablation.json
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True # trace self.pcd with override colour SH2RGB(_features_dc); env Gaussians unused
+    supervisor_cfg:
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

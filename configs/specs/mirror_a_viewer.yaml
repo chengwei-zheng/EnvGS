@@ -1,0 +1,22 @@
+# evc-gui defaults for the synthetic mirror scene A (GT poses, Blender world: metres, Z up)
+viewer_cfg:
+    window_size: [729, 972]
+    camera_cfg:
+        world_up: [0.0, 0.0, 1.0]
+        # initial view = training camera 0 (frame 0: far end of the room, facing the mirror). Without R/T the viewer
+        # falls back to lookat_bounds(bounds=+-20m) and starts outside the room at (-30,-30,-30) looking at the origin.
+        R: [[-0.017657, 0.999844, 0.000000], [-0.058745, -0.001037, -0.998272], [-0.998117, -0.017626, 0.058754]]
+        T: [[-0.050545], [1.212776], [2.734798]]
+        origin: [-0.600, 0.025, 1.000] # pivot for left-drag orbiting: room middle in front of the mirror
+        movement_force: 5.0 # WASD/CV speed
+
+# evc-gui swaps the val dataset for NoopDataset (main.py "HACK"), which has no Ks: the viewer then uses
+# fx = fy = focal_ratio * max(window H, W). The training cameras are 90 deg vertical / 106.3 deg horizontal (4:3),
+# i.e. fx = 0.375 * W; the default focal_ratio 1.0 gives a ~2.4x zoomed-in view.
+# NoopDataset also defaults to imbound_crop=True: renders only inside the 2D box of the projected scene-bound corners.
+# With the camera inside the bounds some corners are behind it, their projections flip and the box is wrong ->
+# black bands on the left/right while dragging. Gaussian rendering needs no crop.
+val_dataloader_cfg:
+    dataset_cfg:
+        focal_ratio: 0.375
+        imbound_crop: False

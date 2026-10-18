@@ -1,0 +1,15 @@
+# Synthetic Blender scene A: one framed round wall mirror whose back is never visible, no glass
+# (2592x1944 renders, GT poses -> COLMAP model with fixed poses, points triangulated from RGB only);
+# see ~/SMBC/blender/project/proj_indoor_mirror_a and ~/SMBC/EnvGS/tools/blender_gt_to_colmap.py
+dataloader_cfg:
+    dataset_cfg: &dataset_cfg
+        ratio: 0.5 # 1296x972, same as the bathroom runs
+
+val_dataloader_cfg:
+    dataset_cfg:
+        <<: *dataset_cfg
+
+model_cfg:
+    sampler_cfg:
+        bounds: [[-20.0, -20.0, -20.0], [20.0, 20.0, 20.0]]
+        env_bounds: [[-20.0, -20.0, -20.0], [20.0, 20.0, 20.0]]

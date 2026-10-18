@@ -1,0 +1,18 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/bathroom/walk400_2mirrors_nmask.yaml # dataset usage configuration
+
+# Ablation of envgs_walk400_2mirrors: the StableNormal prior is wrong inside the large mirror
+# (it predicts the normals of the reflected room), so the monocular normal loss is disabled on
+# GT mirror + glass pixels (normals stored as black there, see norm_ignore_zero). Same schedule otherwise.
+model_cfg:
+    supervisor_cfg:
+        perc_loss_start_iter: 45000 # less iterations for faster training
+        norm_ignore_zero: True
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

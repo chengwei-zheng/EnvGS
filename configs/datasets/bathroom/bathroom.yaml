@@ -1,0 +1,13 @@
+# Synthetic Blender bathroom (2592x1944 renders, 400 views, COLMAP poses); see ~/SMBC/blender/project/proj_indoor_bathroom
+dataloader_cfg:
+    dataset_cfg: &dataset_cfg
+        ratio: 0.5 # 1296x972, same eval resolution as the RT-Splatting / gsplat comparison
+
+val_dataloader_cfg:
+    dataset_cfg:
+        <<: *dataset_cfg
+
+model_cfg:
+    sampler_cfg:
+        bounds: [[-20.0, -20.0, -20.0], [20.0, 20.0, 20.0]]
+        env_bounds: [[-20.0, -20.0, -20.0], [20.0, 20.0, 20.0]]

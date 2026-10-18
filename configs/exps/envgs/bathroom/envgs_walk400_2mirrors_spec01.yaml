@@ -1,0 +1,12 @@
+configs:
+    - configs/exps/envgs/bathroom/envgs_walk400_2mirrors.yaml
+
+# Ablation of envgs_walk400_2mirrors: larger initial / reset specular strength (default 1e-3),
+# as the EnvGS README suggests for scenes with strong reflections. Everything else identical
+# (same data dir, including the same random environment-Gaussian init points).
+model_cfg:
+    sampler_cfg:
+        init_specular: 0.1
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

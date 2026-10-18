@@ -1,0 +1,8 @@
+# evc-gui defaults for the synthetic bathroom scenes (COLMAP world of dataset_walk400 / dataset_walk400_2mirrors):
+# that world is not Z-up, so the default world_up=[0,0,1] makes mouse drags roll; up = mean camera -Y.
+viewer_cfg:
+    window_size: [486, 648]
+    camera_cfg:
+        world_up: [-0.045, -0.994, -0.099]
+        origin: [0.256, -0.024, 0.050] # mean camera center, pivot for left-drag orbiting
+        movement_force: 10.0 # WASD/CV speed (default 1.0 is too slow for this scene)

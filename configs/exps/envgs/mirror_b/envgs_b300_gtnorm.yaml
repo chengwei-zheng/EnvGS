@@ -1,0 +1,16 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/b300_gtnorm.yaml # dataset usage configuration
+
+# Upper-bound ablation of envgs_b300: the monocular normal prior on GT mirror pixels (persp/masks == 3) is replaced
+# by the GT mirror-plane normal (StableNormal predicts the reflected room there). Same schedule otherwise.
+model_cfg:
+    supervisor_cfg:
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

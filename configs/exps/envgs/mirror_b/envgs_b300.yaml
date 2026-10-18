@@ -1,0 +1,15 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/b300.yaml # dataset usage configuration
+
+# same schedule as configs/exps/envgs/envgs/envgs_audi.yaml , the bathroom runs and scene A (envgs_a220)
+model_cfg:
+    supervisor_cfg:
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

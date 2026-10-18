@@ -90,6 +90,10 @@ class EnvGSSampler(Gaussian2DSampler):
                  specular_filtering_percent: float = 0.75,  # percentage of pixels to be filtered
                  acc_filtering_start_iter: int = -1,  # start to filter pixels with large accumulated weights
                  multi_sampling_start_iter: int = -1,  # start to use multi-sample for reflection rendering
+                 # Shared-Gaussian reflection (2026-10-17): reflected rays are traced against the base Gaussians
+                 # (`self.pcd`) instead of the environment Gaussians; the hit colour is the view-independent SH DC term
+                 # SH2RGB(_features_dc), one bounce. The environment Gaussians are kept (checkpoint layout) but unused.
+                 shared_reflection: bool = False,
 
                  # Default parameters for Gaussian2DSampler
                  **kwargs,
@@ -127,6 +131,7 @@ class EnvGSSampler(Gaussian2DSampler):
         self.specular_filtering_percent = specular_filtering_percent
         self.acc_filtering_start_iter = acc_filtering_start_iter
         self.multi_sampling_start_iter = multi_sampling_start_iter
+        self.shared_reflection = shared_reflection
 
         # Environment Gaussian related parameters
         self.env_preload_gs = env_preload_gs
@@ -339,6 +344,8 @@ class EnvGSSampler(Gaussian2DSampler):
         optimizer: Adam = cfg.runner.optimizer
         # Return if we're not in the update iteration
         if iter <= self.render_reflection_start_iter: return
+        # Environment Gaussians receive no gradients in shared mode: skip their densification / opacity reset
+        if self.shared_reflection: return
 
         # Update the learning rate
         self.env.update_learning_rate(iter.item(), optimizer, prefix='sampler.env.')
@@ -537,7 +544,25 @@ class EnvGSSampler(Gaussian2DSampler):
             ref_o, ref_d = self.get_reflect_rays(ray_o, ray_d, coords, output, batch)
 
             # Invoke hardware ray tracer
-            if self.tracing_backend == 'cpp':
+            if self.tracing_backend == 'cpp' and self.shared_reflection:
+                # Reflected rays hit the base Gaussians; START_OFFSET (0.06) in the tracer skips the mirror's own surfels.
+                # Gradients flow into every parameter of the hit base Gaussians (DC colour and geometry); their
+                # densification statistics still come from the rasterised camera view only.
+                dc_rgb = torch.clamp_min(SH2RGB(self.pcd._features_dc[:, 0, :]), 0.0)  # (P, 3)
+                env_output = self.diffop.render_gaussians(
+                    viewpoint_camera,
+                    ref_o,
+                    ref_d,
+                    self.pcd,
+                    self.pipe_env,
+                    self.env_bg_color,
+                    0,
+                    start_from_first=False,
+                    scaling_modifier=self.scale_mod,
+                    override_color=dc_rgb,
+                    batch=batch
+                )
+            elif self.tracing_backend == 'cpp':
                 env_output = self.diffop.render_gaussians(
                     viewpoint_camera,
                     ref_o,
@@ -556,7 +581,7 @@ class EnvGSSampler(Gaussian2DSampler):
 
             # Retain gradients after updates
             # Skip saving the output if not in training mode to avoid unexpected densification skipping caused by `None` gradient
-            if self.training: self.last_output_env = env_output
+            if self.training and not self.shared_reflection: self.last_output_env = env_output
 
             # Prepare output for supervision and visualization
             output = self.store_env_gaussian_output(env_output, output, batch)

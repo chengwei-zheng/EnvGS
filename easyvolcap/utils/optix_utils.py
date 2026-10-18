@@ -160,7 +160,7 @@ class HardwareRendering(nn.Module):
         # from SHs in Python, do it. If not, then SH -> RGB conversion will be done by rasterizer
         shs = None
         colors_precomp = None
-        if override_color is None or (pcd.render_reflection and pcd.feature_splatting):
+        if override_color is None or (pcd.render_reflection and getattr(pcd, 'feature_splatting', False)):  # attribute never defined upstream
             if pipe.convert_SHs_python:
                 shs_view = pcd.get_features.transpose(1, 2).view(-1, 3, (pcd.max_sh_degree+1)**2)
                 dir_pp = (pcd.get_xyz - camera.camera_center.repeat(pcd.get_features.shape[0], 1))

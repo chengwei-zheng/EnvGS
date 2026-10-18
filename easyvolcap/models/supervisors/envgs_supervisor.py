@@ -29,6 +29,7 @@ class EnvGSSupervisor(VolumetricVideoSupervisor):
                  use_spec_scale_norm_loss: bool = False,
                  use_spec_scale_norm_loss_start_iter: int = 7000,
                  use_spec_scale_norm_loss_until_iter: int = None,
+                 norm_ignore_zero: bool = False,  # skip pixels whose prior normal is stored as (0, 0, 0), i.e. masked out
 
                  gs_norm_loss_weight: float = 0.0,
                  gs_norm_loss_weight_final: float = None,
@@ -88,6 +89,7 @@ class EnvGSSupervisor(VolumetricVideoSupervisor):
         self.use_spec_scale_norm_loss = use_spec_scale_norm_loss
         self.use_spec_scale_norm_loss_start_iter = use_spec_scale_norm_loss_start_iter
         self.use_spec_scale_norm_loss_until_iter = use_spec_scale_norm_loss_until_iter
+        self.norm_ignore_zero = norm_ignore_zero
 
         self.gs_norm_loss_weight = gs_norm_loss_weight
         self.gs_norm_loss_weight_final = gs_norm_loss_weight_final
@@ -164,6 +166,10 @@ class EnvGSSupervisor(VolumetricVideoSupervisor):
                 # Compute normal loss
                 norm_loss = (norm_map - norm).abs().sum(dim=-1)  # MARK: SYNC
                 norm_loss += 1 - F.cosine_similarity(norm_map, norm, dim=-1)  # MARK: SYNC
+
+                # Maybe drop pixels whose prior normal is masked out (stored as pure black)
+                if self.norm_ignore_zero:
+                    norm_loss = norm_loss * (batch.norm.sum(dim=-1) > 1e-3).float()
 
                 # Maybe scale the normal loss with acc_map
                 if self.use_acc_scale_norm_loss:

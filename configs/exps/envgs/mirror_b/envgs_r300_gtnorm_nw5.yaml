@@ -1,0 +1,20 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/r300_gtnorm.yaml # dataset usage configuration
+
+# envgs_r300_gtnorm with the monocular-normal-prior loss weight x5 (0.01 -> 0.05). The mirror prior is the GT plane
+# normal, so a stronger weight should flatten the mirror (r300_gtnorm: depth std 8 mm, normal spread 2.3 deg vs
+# b300_gtnorm 4 mm / 1.0 deg). Note the weight also applies to StableNormal on all non-mirror pixels.
+model_cfg:
+    sampler_cfg:
+        shared_reflection: False # trained with the old default (env Gaussians); default became True on 2026-10-21
+    supervisor_cfg:
+        norm_loss_weight: 0.05
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

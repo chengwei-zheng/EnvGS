@@ -2,8 +2,8 @@
 # eval_mirror_b_run.sh <exp_tag> <dataset_dir_name> <gpu>   e.g. eval_mirror_b_run.sh b300_nmask dataset_b300 1
 # Export raw RGB/depth of a finished EnvGS mirror_b run, convert to npz, run the GT eval (GT poses, scale 1).
 s=$1; d=$2; g=$3
-E=/home/yiinqiang/SMBC/EnvGS/EnvGS; B=/home/yiinqiang/SMBC/blender/project/proj_indoor_mirror_b
-C=/home/yiinqiang/SMBC/EnvGS/data/datasets/original/mirror_b/${d#dataset_}
+E=/home/yiinqiang/SMBC/EnvGS/EnvGS; B=${B:-/home/yiinqiang/SMBC/blender/project/proj_indoor_mirror_b}  # r300: B=<proj_indoor_mirror_b_rot30>
+C=${C:-/home/yiinqiang/SMBC/EnvGS/data/datasets/original/mirror_b/${d#dataset_}}  # r300lp: C=<original/mirror_b/r300lp>
 R=$E/data/result/envgs/mirror_b/envgs_$s
 cd $E
 bash -c "source ~/miniconda3/etc/profile.d/conda.sh; conda activate envgs; CUDA_VISIBLE_DEVICES=$g python mirror_lidar/tools/export_raw.py -c configs/exps/envgs/mirror_b/envgs_$s.yaml exp_name=envgs/mirror_b/envgs_$s runner_cfg.visualizer_cfg.save_tag=rawdepth runner_cfg.visualizer_cfg.vis_ext=.exr runner_cfg.visualizer_cfg.dpt_curve=linear runner_cfg.visualizer_cfg.store_alpha_channel=False runner_cfg.visualizer_cfg.store_ground_truth=False runner_cfg.visualizer_cfg.store_image_error=False 'runner_cfg.visualizer_cfg.types=[RENDER,DEPTH]' < /dev/null > data/logs/export_mirror_b_$s.log 2>&1"

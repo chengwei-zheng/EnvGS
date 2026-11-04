@@ -502,10 +502,15 @@ class GaussianModel(nn.Module):
         new_opacity.grad = self._opacity.grad
         self._opacity = self.replace_tensor_to_optimizer(new_opacity, '_opacity', optimizer, prefix)
 
-    def reset_specular(self, reset_specular: float = 0.001, optimizer: Optimizer = None, prefix: str = '', reset_specular_all: bool = False):
-        log(yellow_slim(f'[RESET SPECULAR] RESET SPECULAR TO {reset_specular}'))
-        if reset_specular_all: new_specular = self.specular_inverse_activation(torch.ones_like(self._specular, ) * reset_specular)
-        else: new_specular = torch.min(self._specular, self.specular_inverse_activation(torch.ones_like(self._specular, ) * reset_specular))
+    def reset_specular(self, reset_specular: float = 0.001, optimizer: Optimizer = None, prefix: str = '', reset_specular_all: bool = False,
+                       reset_specular_scale: float = 0.0):
+        if reset_specular_scale > 0:  # 2026-10-22: soft reset, beta *= scale (keeps the ranking between surfels)
+            log(yellow_slim(f'[RESET SPECULAR] SCALE SPECULAR BY {reset_specular_scale}'))
+            new_specular = self.specular_inverse_activation((self.get_specular.detach() * reset_specular_scale).clamp(1e-6, 1 - 1e-6))
+        elif reset_specular_all: new_specular = self.specular_inverse_activation(torch.ones_like(self._specular, ) * reset_specular)
+        else:
+            log(yellow_slim(f'[RESET SPECULAR] RESET SPECULAR TO {reset_specular}'))
+            new_specular = torch.min(self._specular, self.specular_inverse_activation(torch.ones_like(self._specular, ) * reset_specular))
         new_specular.grad = self._specular.grad
         self._specular = self.replace_tensor_to_optimizer(new_specular, '_specular', optimizer, prefix)
 

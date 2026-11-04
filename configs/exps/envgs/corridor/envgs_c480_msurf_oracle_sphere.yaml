@@ -1,0 +1,50 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/corridor/c480_lidarnorm_quadric.yaml # dataset usage configuration
+
+# 2026-10-22: envgs_r300lp_lidarnorm_shared, tracing reflections only on pixels with rendered beta > 0.02 (non-mirror
+# beta ~0.004, mirror ~0.6 in envgs_r300_lidarnorm_shared_betalog), but every pixel during the first 1500 iterations
+# after reflections start (3000) and after each beta reset (6k..18k, every 3000): beta needs ~1000 iterations to recover.
+# 2026-10-27: + extra depth-normal consistency on the LiDAR mirror interior (mirror_gs_norm_loss_weight 1.0, no depth scale; the
+# mirror bumps make up only 1-2% of the full-image gs_norm loss with weight 0.04): against the bumps on the mirror.
+# 2026-10-27: as _mgsn1, but weight 0.2 from iteration 3000 (reflections start): _mgsn1 (1.0 from 0) grew the mirror-plane surfels
+# 0-5 cm past the rim (rim floaters, blurred wall behind the mirror, walls -5 dB).
+# 2026-10-28: the _mgsn02 setting (user's pick) on scene B_framed (dataset_f300, thick framed mirror).
+# 2026-10-29: f300 _mgsn05 (user: default on scene B_framed) on the new corridor scene with the convex mirror (dataset_c480).
+# 2026-11-03: + learnable mirror surface for the reflection normal (as envgs_cv300_msurf_spline_learn: cubic B-spline height field, 2 cm control grid),
+# initialised from the global LiDAR quadric fit (identical to the quadric at init). cv300: exact reflection normals from the start gave
+# +6 dB (fitted surface, not learned) / +12 dB (learned); here the question is whether beta on the mirror gets up at all
+# (c480 baseline / gtnorm prior: mirror beta 0.03-0.08 the whole run, reflection baked into the surfel colour). No beta loss, no depth.
+# 2026-11-04: ORACLE (GT used): as envgs_c480_msurf_spline_learn, but the reflection normal comes from the exact GT sphere, fixed, over the full
+# GT cap (make_oracle_sphere_patch.py; the LiDAR extent misses the top ~4 rows). spline_learn: mirror 25.93 dB, centre +6 dB over the baseline,
+# outer |u| > 0.4 m no better (learned normals 0.5-1.5 deg there). Upper bound of the normal: what is left is mirror size / view coverage / sampling.
+model_cfg:
+    sampler_cfg:
+        mirror_surface_cfg: # explicit mirror surface for the reflection normal (samplers/mirror_surface.py)
+            type: quadric
+            fit: data/result/envgs/corridor/mirror_oracle_c480_20261104/patch0_gt_sphere.npz
+            learnable: False
+            eval_sphere: [-0.02669, 2.42669, 2.25706, 1.0] # GT sphere, logging only (msurf_gt_*)
+        shared_reflection: True # reflections trace the base Gaussians (SH DC colour), env Gaussians unused
+        specular_filtering_start_iter: 4500
+        specular_filtering_threshold: 0.02
+        specular_filtering_pause_iter: 1500
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: MirrorRegionSupervisor
+        mirror_mask_dir: data/datasets/corridor/c480_lidarnorm_quadric/mirror_masks
+        log_mirror_stats: True # logging only: beta / reflection share / c_ref on the mirror, beta elsewhere, traced pixel fraction
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+        mirror_gs_norm_loss_weight: 0.5 # extra 1 - n_render . n_depth on the LiDAR mirror interior (global gs_norm 0.04 x depth scale)
+        mirror_gs_norm_start_iter: 3000
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

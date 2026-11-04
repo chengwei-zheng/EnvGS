@@ -1,6 +1,7 @@
 # EnvGS on the synthetic bathroom datasets — handoff notes
 
-State as of 2026-10-14. Everything below was set up and run from a separate Claude Code session (working in
+State as of 2026-10-14. **Newer status (2026-10-29): the mirror work continues on scene B_framed (`mirror_b/f300`); its default setting is
+`envgs_f300_lidarnorm_shared_bfilt_mgsn05`. Current results / recipe: `mirror_lidar/TRAINING_RECIPE.md` §3, `mirror_lidar/NEXT_STEPS.md`.** Everything below was set up and run from a separate Claude Code session (working in
 `~/SMBC/gsplat/gsplat`); this file is the single reference for continuing the EnvGS work.
 
 Contents: 1 Layout · 2 Environment `envgs` · 3 Local changes to the EnvGS repo · 4 Official data (audi) ·

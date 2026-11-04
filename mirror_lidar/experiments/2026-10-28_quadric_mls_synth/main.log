@@ -1,0 +1,338 @@
+plane           sig 1.0cm h 0.05 plane      int  3.89/ 8.00 deg   1.3mm  edge  4.97/13.86 deg   2.1mm  k [0.0, 0.0] fail 0
+plane           sig 1.0cm h 0.05 sphere     int  3.99/ 8.13 deg   2.5mm  edge  5.52/19.10 deg   2.8mm  k [-0.21, -0.21] fail 0
+plane           sig 1.0cm h 0.05 quad_free  int  4.06/ 8.29 deg   2.5mm  edge  6.96/48.81 deg   3.7mm  k [4.187, -4.536] fail 0
+plane           sig 1.0cm h 0.05 quad_t3    int  4.01/ 8.13 deg   2.5mm  edge  5.55/19.25 deg   2.8mm  k [-0.021, -0.374] fail 0
+plane           sig 1.0cm h 0.05 quad_t1    int  3.99/ 8.13 deg   2.5mm  edge  5.53/19.12 deg   2.8mm  k [-0.189, -0.223] fail 0
+plane           sig 1.0cm h 0.05 quad_t0.3  int  3.99/ 8.13 deg   2.5mm  edge  5.52/19.11 deg   2.8mm  k [-0.209, -0.211] fail 0
+  (86s)
+plane           sig 1.0cm h 0.10 plane      int  1.46/ 3.07 deg   0.9mm  edge  1.85/ 4.51 deg   1.2mm  k [0.0, 0.0] fail 0
+plane           sig 1.0cm h 0.10 sphere     int  1.47/ 3.07 deg   1.5mm  edge  2.03/ 5.49 deg   1.5mm  k [0.003, 0.003] fail 0
+plane           sig 1.0cm h 0.10 quad_free  int  1.48/ 3.14 deg   1.5mm  edge  3.28/15.37 deg   1.9mm  k [0.757, -0.806] fail 0
+plane           sig 1.0cm h 0.10 quad_t3    int  1.48/ 3.10 deg   1.5mm  edge  2.32/ 7.12 deg   1.5mm  k [0.4, -0.421] fail 0
+plane           sig 1.0cm h 0.10 quad_t1    int  1.47/ 3.09 deg   1.5mm  edge  2.09/ 5.76 deg   1.5mm  k [0.077, -0.094] fail 0
+plane           sig 1.0cm h 0.10 quad_t0.3  int  1.47/ 3.07 deg   1.5mm  edge  2.03/ 5.50 deg   1.5mm  k [0.012, -0.007] fail 0
+  (92s)
+plane           sig 1.0cm h 0.20 plane      int  0.77/ 1.58 deg   0.9mm  edge  0.89/ 2.17 deg   1.2mm  k [0.0, 0.0] fail 0
+plane           sig 1.0cm h 0.20 sphere     int  0.77/ 1.59 deg   1.5mm  edge  1.12/ 2.56 deg   1.4mm  k [0.002, 0.002] fail 0
+plane           sig 1.0cm h 0.20 quad_free  int  0.76/ 1.59 deg   1.5mm  edge  1.99/ 6.35 deg   1.7mm  k [0.202, -0.193] fail 0
+plane           sig 1.0cm h 0.20 quad_t3    int  0.77/ 1.59 deg   1.5mm  edge  1.85/ 5.56 deg   1.6mm  k [0.192, -0.184] fail 0
+plane           sig 1.0cm h 0.20 quad_t1    int  0.77/ 1.58 deg   1.5mm  edge  1.40/ 3.58 deg   1.5mm  k [0.136, -0.13] fail 0
+plane           sig 1.0cm h 0.20 quad_t0.3  int  0.78/ 1.58 deg   1.5mm  edge  1.16/ 2.73 deg   1.4mm  k [0.032, -0.028] fail 0
+  (97s)
+plane           sig 1.0cm h 0.40 plane      int  0.37/ 0.78 deg   0.8mm  edge  0.50/ 1.14 deg   1.4mm  k [0.0, 0.0] fail 0
+plane           sig 1.0cm h 0.40 sphere     int  0.38/ 0.81 deg   1.4mm  edge  0.64/ 1.53 deg   1.4mm  k [0.002, 0.002] fail 0
+plane           sig 1.0cm h 0.40 quad_free  int  0.39/ 0.85 deg   1.4mm  edge  1.29/ 3.26 deg   1.8mm  k [0.055, -0.051] fail 0
+plane           sig 1.0cm h 0.40 quad_t3    int  0.39/ 0.85 deg   1.4mm  edge  1.28/ 3.23 deg   1.8mm  k [0.055, -0.05] fail 0
+plane           sig 1.0cm h 0.40 quad_t1    int  0.39/ 0.85 deg   1.4mm  edge  1.22/ 3.03 deg   1.8mm  k [0.053, -0.049] fail 0
+plane           sig 1.0cm h 0.40 quad_t0.3  int  0.39/ 0.83 deg   1.4mm  edge  0.88/ 2.20 deg   1.5mm  k [0.041, -0.036] fail 0
+  (119s)
+plane           sig 2.5cm h 0.05 plane      int 10.36/25.69 deg  11.8mm  edge 14.39/41.92 deg  12.3mm  k [0.0, 0.0] fail 16
+plane           sig 2.5cm h 0.05 sphere     int 11.05/26.75 deg  15.1mm  edge 16.60/53.16 deg  14.6mm  k [-0.268, -0.268] fail 16
+plane           sig 2.5cm h 0.05 quad_free  int 11.36/31.43 deg  15.6mm  edge 19.90/80.68 deg  15.2mm  k [11.675, -12.26] fail 16
+plane           sig 2.5cm h 0.05 quad_t3    int 11.04/26.89 deg  15.1mm  edge 16.58/53.14 deg  14.6mm  k [-0.27, -0.412] fail 16
+plane           sig 2.5cm h 0.05 quad_t1    int 11.05/26.87 deg  15.1mm  edge 16.62/53.16 deg  14.6mm  k [-0.302, -0.336] fail 16
+plane           sig 2.5cm h 0.05 quad_t0.3  int 11.05/26.87 deg  15.1mm  edge 16.62/53.16 deg  14.6mm  k [-0.312, -0.328] fail 16
+  (86s)
+plane           sig 2.5cm h 0.10 plane      int  3.07/ 6.38 deg   2.5mm  edge  6.67/19.47 deg   7.2mm  k [0.0, 0.0] fail 0
+plane           sig 2.5cm h 0.10 sphere     int  3.12/ 6.46 deg   4.4mm  edge  8.75/30.01 deg   8.0mm  k [-0.049, -0.049] fail 0
+plane           sig 2.5cm h 0.10 quad_free  int  3.13/ 6.46 deg   4.4mm  edge 18.33/60.81 deg  11.3mm  k [1.621, -1.658] fail 0
+plane           sig 2.5cm h 0.10 quad_t3    int  3.13/ 6.45 deg   4.4mm  edge  9.37/31.66 deg   8.1mm  k [0.191, -0.264] fail 0
+plane           sig 2.5cm h 0.10 quad_t1    int  3.13/ 6.45 deg   4.4mm  edge  8.85/30.20 deg   8.0mm  k [-0.032, -0.073] fail 0
+plane           sig 2.5cm h 0.10 quad_t0.3  int  3.12/ 6.46 deg   4.4mm  edge  8.76/30.03 deg   8.0mm  k [-0.045, -0.054] fail 0
+  (90s)
+plane           sig 2.5cm h 0.20 plane      int  1.73/ 3.76 deg   2.2mm  edge  2.69/ 6.37 deg   4.0mm  k [0.0, 0.0] fail 0
+plane           sig 2.5cm h 0.20 sphere     int  1.74/ 3.72 deg   3.8mm  edge  3.44/ 8.56 deg   4.1mm  k [0.008, 0.008] fail 0
+plane           sig 2.5cm h 0.20 quad_free  int  1.76/ 3.75 deg   3.8mm  edge  8.02/23.85 deg   6.3mm  k [0.472, -0.442] fail 0
+plane           sig 2.5cm h 0.20 quad_t3    int  1.76/ 3.72 deg   3.8mm  edge  5.50/14.18 deg   4.8mm  k [0.35, -0.33] fail 0
+plane           sig 2.5cm h 0.20 quad_t1    int  1.75/ 3.73 deg   3.8mm  edge  3.90/ 9.50 deg   4.2mm  k [0.108, -0.103] fail 0
+plane           sig 2.5cm h 0.20 quad_t0.3  int  1.75/ 3.73 deg   3.8mm  edge  3.49/ 8.70 deg   4.2mm  k [0.021, -0.006] fail 0
+  (95s)
+plane           sig 2.5cm h 0.40 plane      int  0.94/ 1.92 deg   2.1mm  edge  1.38/ 3.16 deg   3.7mm  k [0.0, 0.0] fail 0
+plane           sig 2.5cm h 0.40 sphere     int  0.95/ 1.97 deg   3.5mm  edge  1.73/ 4.54 deg   3.8mm  k [0.008, 0.008] fail 0
+plane           sig 2.5cm h 0.40 quad_free  int  0.99/ 2.09 deg   3.5mm  edge  3.98/10.05 deg   5.3mm  k [0.144, -0.117] fail 0
+plane           sig 2.5cm h 0.40 quad_t3    int  0.98/ 2.08 deg   3.5mm  edge  3.78/ 9.62 deg   5.2mm  k [0.141, -0.114] fail 0
+plane           sig 2.5cm h 0.40 quad_t1    int  0.97/ 2.05 deg   3.5mm  edge  3.02/ 7.43 deg   4.5mm  k [0.119, -0.097] fail 0
+plane           sig 2.5cm h 0.40 quad_t0.3  int  0.97/ 1.99 deg   3.5mm  edge  1.92/ 4.98 deg   3.9mm  k [0.048, -0.03] fail 0
+  (112s)
+sphere_R1       sig 1.0cm h 0.05 plane      int  3.56/ 8.11 deg   1.2mm  edge  4.49/12.21 deg   1.9mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 1.0cm h 0.05 sphere     int  3.61/ 8.10 deg   2.2mm  edge  4.83/16.10 deg   2.3mm  k [1.082, 1.082] fail 0
+sphere_R1       sig 1.0cm h 0.05 quad_free  int  3.67/ 8.29 deg   2.2mm  edge  5.30/31.62 deg   2.8mm  k [5.293, -2.933] fail 0
+sphere_R1       sig 1.0cm h 0.05 quad_t3    int  3.61/ 8.13 deg   2.2mm  edge  4.82/16.19 deg   2.3mm  k [1.241, 0.886] fail 0
+sphere_R1       sig 1.0cm h 0.05 quad_t1    int  3.60/ 8.09 deg   2.2mm  edge  4.83/16.11 deg   2.3mm  k [1.101, 1.057] fail 0
+sphere_R1       sig 1.0cm h 0.05 quad_t0.3  int  3.60/ 8.09 deg   2.2mm  edge  4.83/16.10 deg   2.3mm  k [1.084, 1.079] fail 0
+  (89s)
+sphere_R1       sig 1.0cm h 0.10 plane      int  1.33/ 2.92 deg   1.1mm  edge  1.31/ 3.28 deg   1.6mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 1.0cm h 0.10 sphere     int  1.33/ 2.89 deg   1.4mm  edge  2.09/ 6.09 deg   1.3mm  k [1.064, 1.064] fail 0
+sphere_R1       sig 1.0cm h 0.10 quad_free  int  1.33/ 2.90 deg   1.4mm  edge  3.00/13.99 deg   1.7mm  k [1.752, 0.381] fail 0
+sphere_R1       sig 1.0cm h 0.10 quad_t3    int  1.33/ 2.89 deg   1.4mm  edge  2.54/ 7.85 deg   1.4mm  k [1.499, 0.624] fail 0
+sphere_R1       sig 1.0cm h 0.10 quad_t1    int  1.33/ 2.89 deg   1.4mm  edge  2.16/ 6.36 deg   1.3mm  k [1.181, 0.95] fail 0
+sphere_R1       sig 1.0cm h 0.10 quad_t0.3  int  1.33/ 2.88 deg   1.4mm  edge  2.11/ 6.12 deg   1.3mm  k [1.077, 1.054] fail 0
+  (91s)
+sphere_R1       sig 1.0cm h 0.20 plane      int  0.71/ 1.49 deg   3.4mm  edge  1.89/ 3.26 deg   2.4mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 1.0cm h 0.20 sphere     int  0.67/ 1.43 deg   1.4mm  edge  1.06/ 2.62 deg   1.2mm  k [1.022, 1.022] fail 0
+sphere_R1       sig 1.0cm h 0.20 quad_free  int  0.68/ 1.43 deg   1.4mm  edge  2.03/ 5.64 deg   1.5mm  k [1.2, 0.84] fail 0
+sphere_R1       sig 1.0cm h 0.20 quad_t3    int  0.68/ 1.43 deg   1.4mm  edge  1.92/ 5.25 deg   1.4mm  k [1.194, 0.847] fail 0
+sphere_R1       sig 1.0cm h 0.20 quad_t1    int  0.67/ 1.43 deg   1.4mm  edge  1.54/ 3.85 deg   1.3mm  k [1.158, 0.887] fail 0
+sphere_R1       sig 1.0cm h 0.20 quad_t0.3  int  0.67/ 1.43 deg   1.4mm  edge  1.14/ 2.84 deg   1.2mm  k [1.062, 0.979] fail 0
+  (94s)
+sphere_R1       sig 1.0cm h 0.40 plane      int  0.68/ 1.87 deg  13.1mm  edge  6.24/ 7.60 deg   3.9mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 1.0cm h 0.40 sphere     int  0.33/ 0.73 deg   1.3mm  edge  0.53/ 1.32 deg   1.2mm  k [1.007, 1.007] fail 0
+sphere_R1       sig 1.0cm h 0.40 quad_free  int  0.34/ 0.73 deg   1.3mm  edge  1.04/ 2.84 deg   1.5mm  k [1.054, 0.962] fail 0
+sphere_R1       sig 1.0cm h 0.40 quad_t3    int  0.34/ 0.73 deg   1.3mm  edge  1.03/ 2.82 deg   1.5mm  k [1.054, 0.962] fail 0
+sphere_R1       sig 1.0cm h 0.40 quad_t1    int  0.34/ 0.73 deg   1.3mm  edge  1.00/ 2.69 deg   1.5mm  k [1.053, 0.963] fail 0
+sphere_R1       sig 1.0cm h 0.40 quad_t0.3  int  0.34/ 0.73 deg   1.3mm  edge  0.79/ 2.02 deg   1.4mm  k [1.045, 0.97] fail 0
+  (112s)
+sphere_R1       sig 2.5cm h 0.05 plane      int  9.34/24.15 deg   9.6mm  edge 10.15/27.38 deg   8.0mm  k [0.0, 0.0] fail 7
+sphere_R1       sig 2.5cm h 0.05 sphere     int  9.47/24.29 deg  12.6mm  edge 10.88/30.20 deg   9.3mm  k [0.975, 0.975] fail 7
+sphere_R1       sig 2.5cm h 0.05 quad_free  int  9.93/27.58 deg  13.2mm  edge 11.98/48.95 deg  10.1mm  k [11.404, -9.284] fail 7
+sphere_R1       sig 2.5cm h 0.05 quad_t3    int  9.50/24.32 deg  12.6mm  edge 10.89/30.21 deg   9.3mm  k [1.072, 0.924] fail 7
+sphere_R1       sig 2.5cm h 0.05 quad_t1    int  9.51/24.32 deg  12.6mm  edge 10.89/30.20 deg   9.3mm  k [0.988, 0.964] fail 7
+sphere_R1       sig 2.5cm h 0.05 quad_t0.3  int  9.50/24.32 deg  12.6mm  edge 10.89/30.20 deg   9.3mm  k [0.985, 0.965] fail 7
+  (90s)
+sphere_R1       sig 2.5cm h 0.10 plane      int  2.85/ 5.83 deg   2.1mm  edge  6.43/14.36 deg   6.7mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 2.5cm h 0.10 sphere     int  2.86/ 5.84 deg   4.5mm  edge  9.44/20.70 deg   6.3mm  k [1.342, 1.342] fail 0
+sphere_R1       sig 2.5cm h 0.10 quad_free  int  2.90/ 5.92 deg   4.5mm  edge 12.51/32.77 deg   7.4mm  k [2.855, -0.163] fail 0
+sphere_R1       sig 2.5cm h 0.10 quad_t3    int  2.87/ 5.85 deg   4.5mm  edge  9.90/21.86 deg   6.4mm  k [1.654, 1.036] fail 0
+sphere_R1       sig 2.5cm h 0.10 quad_t1    int  2.86/ 5.85 deg   4.5mm  edge  9.53/20.71 deg   6.3mm  k [1.395, 1.293] fail 0
+sphere_R1       sig 2.5cm h 0.10 quad_t0.3  int  2.86/ 5.84 deg   4.5mm  edge  9.45/20.69 deg   6.3mm  k [1.344, 1.336] fail 0
+  (91s)
+sphere_R1       sig 2.5cm h 0.20 plane      int  1.61/ 3.31 deg   3.6mm  edge  1.73/ 4.03 deg   6.0mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 2.5cm h 0.20 sphere     int  1.61/ 3.28 deg   3.5mm  edge  4.96/ 9.73 deg   4.6mm  k [1.133, 1.133] fail 0
+sphere_R1       sig 2.5cm h 0.20 quad_free  int  1.63/ 3.33 deg   3.5mm  edge 10.12/22.50 deg   6.8mm  k [1.56, 0.692] fail 0
+sphere_R1       sig 2.5cm h 0.20 quad_t3    int  1.62/ 3.32 deg   3.5mm  edge  8.15/16.59 deg   5.6mm  k [1.481, 0.78] fail 0
+sphere_R1       sig 2.5cm h 0.20 quad_t1    int  1.61/ 3.30 deg   3.5mm  edge  5.83/10.97 deg   4.8mm  k [1.277, 0.99] fail 0
+sphere_R1       sig 2.5cm h 0.20 quad_t0.3  int  1.61/ 3.28 deg   3.5mm  edge  5.05/ 9.83 deg   4.6mm  k [1.152, 1.113] fail 0
+  (95s)
+sphere_R1       sig 2.5cm h 0.40 plane      int  1.03/ 2.22 deg  13.1mm  edge  5.49/ 7.46 deg   6.1mm  k [0.0, 0.0] fail 0
+sphere_R1       sig 2.5cm h 0.40 sphere     int  0.82/ 1.71 deg   3.4mm  edge  1.99/ 4.21 deg   3.5mm  k [1.051, 1.051] fail 0
+sphere_R1       sig 2.5cm h 0.40 quad_free  int  0.83/ 1.77 deg   3.4mm  edge  4.42/ 9.17 deg   5.1mm  k [1.165, 0.942] fail 0
+sphere_R1       sig 2.5cm h 0.40 quad_t3    int  0.83/ 1.77 deg   3.4mm  edge  4.28/ 8.95 deg   5.0mm  k [1.163, 0.944] fail 0
+sphere_R1       sig 2.5cm h 0.40 quad_t1    int  0.83/ 1.75 deg   3.4mm  edge  3.65/ 7.23 deg   4.5mm  k [1.151, 0.954] fail 0
+sphere_R1       sig 2.5cm h 0.40 quad_t0.3  int  0.82/ 1.73 deg   3.4mm  edge  2.32/ 4.84 deg   3.7mm  k [1.095, 1.005] fail 0
+  (111s)
+cylinder_r0.5   sig 1.0cm h 0.05 plane      int  3.48/ 7.21 deg   1.1mm  edge  3.38/11.52 deg   1.6mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 1.0cm h 0.05 sphere     int  3.54/ 7.19 deg   2.1mm  edge  3.51/15.41 deg   2.0mm  k [1.06, 1.06] fail 0
+cylinder_r0.5   sig 1.0cm h 0.05 quad_free  int  3.59/ 7.36 deg   2.1mm  edge  3.96/27.54 deg   2.3mm  k [5.211, -3.073] fail 0
+cylinder_r0.5   sig 1.0cm h 0.05 quad_t3    int  3.55/ 7.17 deg   2.1mm  edge  3.52/15.52 deg   2.0mm  k [1.27, 0.868] fail 0
+cylinder_r0.5   sig 1.0cm h 0.05 quad_t1    int  3.54/ 7.19 deg   2.1mm  edge  3.51/15.43 deg   2.0mm  k [1.076, 1.039] fail 0
+cylinder_r0.5   sig 1.0cm h 0.05 quad_t0.3  int  3.54/ 7.19 deg   2.1mm  edge  3.51/15.42 deg   2.0mm  k [1.06, 1.058] fail 0
+  (86s)
+cylinder_r0.5   sig 1.0cm h 0.10 plane      int  1.32/ 2.76 deg   1.1mm  edge  1.27/ 3.14 deg   1.4mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 1.0cm h 0.10 sphere     int  1.32/ 2.77 deg   1.4mm  edge  1.49/ 5.91 deg   1.2mm  k [1.018, 1.018] fail 0
+cylinder_r0.5   sig 1.0cm h 0.10 quad_free  int  1.32/ 2.81 deg   1.4mm  edge  2.45/12.18 deg   1.5mm  k [2.275, -0.225] fail 0
+cylinder_r0.5   sig 1.0cm h 0.10 quad_t3    int  1.32/ 2.78 deg   1.4mm  edge  1.92/ 7.40 deg   1.3mm  k [1.81, 0.255] fail 0
+cylinder_r0.5   sig 1.0cm h 0.10 quad_t1    int  1.32/ 2.76 deg   1.4mm  edge  1.56/ 6.05 deg   1.2mm  k [1.22, 0.843] fail 0
+cylinder_r0.5   sig 1.0cm h 0.10 quad_t0.3  int  1.33/ 2.77 deg   1.4mm  edge  1.50/ 5.90 deg   1.2mm  k [1.039, 0.996] fail 0
+  (91s)
+cylinder_r0.5   sig 1.0cm h 0.20 plane      int  0.80/ 1.64 deg   3.4mm  edge  3.19/ 6.13 deg   2.7mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 1.0cm h 0.20 sphere     int  0.78/ 1.61 deg   1.4mm  edge  3.88/ 6.70 deg   1.5mm  k [1.042, 1.042] fail 0
+cylinder_r0.5   sig 1.0cm h 0.20 quad_free  int  0.72/ 1.51 deg   1.4mm  edge  1.57/ 4.69 deg   1.4mm  k [2.081, -0.002] fail 0
+cylinder_r0.5   sig 1.0cm h 0.20 quad_t3    int  0.72/ 1.50 deg   1.4mm  edge  1.23/ 4.61 deg   1.3mm  k [2.003, 0.075] fail 0
+cylinder_r0.5   sig 1.0cm h 0.20 quad_t1    int  0.73/ 1.52 deg   1.4mm  edge  2.38/ 5.89 deg   1.4mm  k [1.644, 0.441] fail 0
+cylinder_r0.5   sig 1.0cm h 0.20 quad_t0.3  int  0.77/ 1.60 deg   1.4mm  edge  3.68/ 6.59 deg   1.5mm  k [1.157, 0.93] fail 0
+  (95s)
+cylinder_r0.5   sig 1.0cm h 0.40 plane      int  1.02/ 2.67 deg  13.4mm  edge 10.35/13.92 deg   9.1mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 1.0cm h 0.40 sphere     int  0.92/ 2.81 deg   1.9mm  edge  9.95/12.75 deg   6.2mm  k [1.028, 1.028] fail 0
+cylinder_r0.5   sig 1.0cm h 0.40 quad_free  int  0.37/ 0.77 deg   1.4mm  edge  0.89/ 2.57 deg   1.5mm  k [2.068, 0.005] fail 0
+cylinder_r0.5   sig 1.0cm h 0.40 quad_t3    int  0.37/ 0.78 deg   1.4mm  edge  1.00/ 3.30 deg   1.5mm  k [2.042, 0.031] fail 0
+cylinder_r0.5   sig 1.0cm h 0.40 quad_t1    int  0.40/ 0.92 deg   1.4mm  edge  4.48/ 7.35 deg   3.2mm  k [1.88, 0.194] fail 0
+cylinder_r0.5   sig 1.0cm h 0.40 quad_t0.3  int  0.68/ 2.15 deg   1.7mm  edge  8.94/11.91 deg   5.7mm  k [1.337, 0.73] fail 0
+  (113s)
+cylinder_r0.5   sig 2.5cm h 0.05 plane      int  9.07/22.37 deg   9.7mm  edge  8.62/36.04 deg   8.4mm  k [0.0, 0.0] fail 9
+cylinder_r0.5   sig 2.5cm h 0.05 sphere     int  9.42/23.41 deg  12.9mm  edge  9.02/45.46 deg   9.5mm  k [1.355, 1.355] fail 9
+cylinder_r0.5   sig 2.5cm h 0.05 quad_free  int  9.77/26.88 deg  13.4mm  edge  9.95/58.03 deg  10.0mm  k [11.457, -9.444] fail 9
+cylinder_r0.5   sig 2.5cm h 0.05 quad_t3    int  9.43/23.45 deg  12.9mm  edge  8.99/45.39 deg   9.5mm  k [1.415, 1.264] fail 9
+cylinder_r0.5   sig 2.5cm h 0.05 quad_t1    int  9.43/23.43 deg  12.9mm  edge  8.97/45.41 deg   9.5mm  k [1.363, 1.339] fail 9
+cylinder_r0.5   sig 2.5cm h 0.05 quad_t0.3  int  9.43/23.43 deg  12.9mm  edge  8.97/45.41 deg   9.5mm  k [1.362, 1.343] fail 9
+  (89s)
+cylinder_r0.5   sig 2.5cm h 0.10 plane      int  2.85/ 5.95 deg   2.3mm  edge  3.95/13.48 deg   5.6mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 2.5cm h 0.10 sphere     int  2.85/ 6.04 deg   4.0mm  edge  5.71/20.74 deg   5.3mm  k [1.174, 1.174] fail 0
+cylinder_r0.5   sig 2.5cm h 0.10 quad_free  int  2.86/ 6.03 deg   4.0mm  edge  8.75/43.85 deg   7.7mm  k [3.192, -0.756] fail 0
+cylinder_r0.5   sig 2.5cm h 0.10 quad_t3    int  2.86/ 6.03 deg   4.0mm  edge  6.14/22.30 deg   5.4mm  k [1.635, 0.749] fail 0
+cylinder_r0.5   sig 2.5cm h 0.10 quad_t1    int  2.85/ 6.05 deg   4.0mm  edge  5.72/20.80 deg   5.3mm  k [1.248, 1.118] fail 0
+cylinder_r0.5   sig 2.5cm h 0.10 quad_t0.3  int  2.85/ 6.04 deg   4.0mm  edge  5.71/20.74 deg   5.3mm  k [1.18, 1.169] fail 0
+  (89s)
+cylinder_r0.5   sig 2.5cm h 0.20 plane      int  1.70/ 3.44 deg   3.6mm  edge  2.66/ 5.46 deg   5.0mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 2.5cm h 0.20 sphere     int  1.69/ 3.48 deg   3.8mm  edge  3.15/12.23 deg   3.8mm  k [1.146, 1.146] fail 0
+cylinder_r0.5   sig 2.5cm h 0.20 quad_free  int  1.68/ 3.44 deg   3.8mm  edge  6.44/18.78 deg   5.4mm  k [2.328, -0.011] fail 0
+cylinder_r0.5   sig 2.5cm h 0.20 quad_t3    int  1.67/ 3.46 deg   3.8mm  edge  4.85/13.29 deg   4.3mm  k [2.076, 0.246] fail 0
+cylinder_r0.5   sig 2.5cm h 0.20 quad_t1    int  1.68/ 3.50 deg   3.8mm  edge  3.40/12.30 deg   3.9mm  k [1.477, 0.818] fail 0
+cylinder_r0.5   sig 2.5cm h 0.20 quad_t0.3  int  1.70/ 3.49 deg   3.8mm  edge  3.15/12.20 deg   3.8mm  k [1.191, 1.108] fail 0
+  (95s)
+cylinder_r0.5   sig 2.5cm h 0.40 plane      int  1.29/ 2.97 deg  13.4mm  edge  9.77/13.50 deg   9.7mm  k [0.0, 0.0] fail 0
+cylinder_r0.5   sig 2.5cm h 0.40 sphere     int  1.20/ 3.36 deg   3.9mm  edge  9.69/14.13 deg   6.5mm  k [1.078, 1.078] fail 0
+cylinder_r0.5   sig 2.5cm h 0.40 quad_free  int  0.92/ 2.04 deg   3.7mm  edge  3.23/ 7.58 deg   4.4mm  k [2.146, 0.019] fail 0
+cylinder_r0.5   sig 2.5cm h 0.40 quad_t3    int  0.91/ 2.03 deg   3.7mm  edge  2.62/ 7.77 deg   4.0mm  k [2.1, 0.067] fail 0
+cylinder_r0.5   sig 2.5cm h 0.40 quad_t1    int  0.94/ 2.25 deg   3.7mm  edge  5.40/11.25 deg   4.6mm  k [1.839, 0.325] fail 0
+cylinder_r0.5   sig 2.5cm h 0.40 quad_t0.3  int  1.10/ 2.99 deg   3.8mm  edge  9.07/13.79 deg   6.2mm  k [1.279, 0.88] fail 0
+  (111s)
+cylinder_r1     sig 1.0cm h 0.05 plane      int  4.57/10.52 deg   1.5mm  edge  3.83/13.73 deg   1.7mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 1.0cm h 0.05 sphere     int  4.62/10.62 deg   2.7mm  edge  4.34/16.13 deg   2.4mm  k [0.278, 0.278] fail 0
+cylinder_r1     sig 1.0cm h 0.05 quad_free  int  4.83/11.06 deg   2.8mm  edge  5.15/24.79 deg   2.6mm  k [5.902, -4.939] fail 0
+cylinder_r1     sig 1.0cm h 0.05 quad_t3    int  4.63/10.63 deg   2.7mm  edge  4.35/16.13 deg   2.4mm  k [0.438, 0.141] fail 0
+cylinder_r1     sig 1.0cm h 0.05 quad_t1    int  4.63/10.62 deg   2.7mm  edge  4.34/16.13 deg   2.4mm  k [0.299, 0.269] fail 0
+cylinder_r1     sig 1.0cm h 0.05 quad_t0.3  int  4.63/10.62 deg   2.7mm  edge  4.34/16.13 deg   2.4mm  k [0.277, 0.271] fail 0
+  (89s)
+cylinder_r1     sig 1.0cm h 0.10 plane      int  1.30/ 2.74 deg   0.9mm  edge  1.16/ 4.11 deg   1.2mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 1.0cm h 0.10 sphere     int  1.29/ 2.71 deg   1.3mm  edge  1.43/ 5.10 deg   1.1mm  k [0.517, 0.517] fail 0
+cylinder_r1     sig 1.0cm h 0.10 quad_free  int  1.29/ 2.73 deg   1.3mm  edge  2.05/ 9.02 deg   1.3mm  k [1.359, -0.304] fail 0
+cylinder_r1     sig 1.0cm h 0.10 quad_t3    int  1.28/ 2.73 deg   1.3mm  edge  1.57/ 5.98 deg   1.2mm  k [1.078, -0.017] fail 0
+cylinder_r1     sig 1.0cm h 0.10 quad_t1    int  1.29/ 2.71 deg   1.3mm  edge  1.45/ 5.20 deg   1.1mm  k [0.649, 0.37] fail 0
+cylinder_r1     sig 1.0cm h 0.10 quad_t0.3  int  1.29/ 2.71 deg   1.3mm  edge  1.43/ 5.11 deg   1.1mm  k [0.529, 0.499] fail 0
+  (92s)
+cylinder_r1     sig 1.0cm h 0.20 plane      int  0.65/ 1.51 deg   1.8mm  edge  1.41/ 3.00 deg   1.8mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 1.0cm h 0.20 sphere     int  0.65/ 1.49 deg   1.3mm  edge  1.91/ 4.35 deg   1.1mm  k [0.511, 0.511] fail 0
+cylinder_r1     sig 1.0cm h 0.20 quad_free  int  0.64/ 1.43 deg   1.3mm  edge  1.33/ 4.85 deg   1.2mm  k [1.04, -0.018] fail 0
+cylinder_r1     sig 1.0cm h 0.20 quad_t3    int  0.64/ 1.43 deg   1.3mm  edge  1.14/ 4.60 deg   1.1mm  k [1.019, 0.005] fail 0
+cylinder_r1     sig 1.0cm h 0.20 quad_t1    int  0.64/ 1.44 deg   1.3mm  edge  1.03/ 4.40 deg   1.1mm  k [0.892, 0.135] fail 0
+cylinder_r1     sig 1.0cm h 0.20 quad_t0.3  int  0.65/ 1.47 deg   1.3mm  edge  1.73/ 4.32 deg   1.1mm  k [0.611, 0.416] fail 0
+  (87s)
+cylinder_r1     sig 1.0cm h 0.40 plane      int  0.52/ 1.09 deg   6.7mm  edge  4.30/ 6.60 deg   5.5mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 1.0cm h 0.40 sphere     int  0.53/ 1.50 deg   1.4mm  edge  5.04/ 6.62 deg   3.3mm  k [0.526, 0.526] fail 0
+cylinder_r1     sig 1.0cm h 0.40 quad_free  int  0.34/ 0.73 deg   1.3mm  edge  0.67/ 2.23 deg   1.3mm  k [1.012, 0.003] fail 0
+cylinder_r1     sig 1.0cm h 0.40 quad_t3    int  0.33/ 0.73 deg   1.3mm  edge  0.64/ 2.13 deg   1.3mm  k [1.008, 0.008] fail 0
+cylinder_r1     sig 1.0cm h 0.40 quad_t1    int  0.34/ 0.75 deg   1.3mm  edge  1.22/ 3.14 deg   1.5mm  k [0.974, 0.046] fail 0
+cylinder_r1     sig 1.0cm h 0.40 quad_t0.3  int  0.41/ 1.01 deg   1.3mm  edge  3.94/ 5.62 deg   2.7mm  k [0.776, 0.262] fail 0
+  (82s)
+cylinder_r1     sig 2.5cm h 0.05 plane      int 12.19/39.90 deg  11.0mm  edge  9.71/37.64 deg   7.5mm  k [0.0, 0.0] fail 19
+cylinder_r1     sig 2.5cm h 0.05 sphere     int 12.68/37.96 deg  13.9mm  edge 10.85/43.96 deg   9.4mm  k [0.434, 0.434] fail 19
+cylinder_r1     sig 2.5cm h 0.05 quad_free  int 14.00/46.51 deg  14.2mm  edge 12.04/75.93 deg  10.2mm  k [13.811, -12.816] fail 19
+cylinder_r1     sig 2.5cm h 0.05 quad_t3    int 12.69/37.97 deg  13.9mm  edge 10.85/44.00 deg   9.4mm  k [0.525, 0.371] fail 19
+cylinder_r1     sig 2.5cm h 0.05 quad_t1    int 12.68/37.98 deg  13.9mm  edge 10.83/43.98 deg   9.4mm  k [0.461, 0.429] fail 19
+cylinder_r1     sig 2.5cm h 0.05 quad_t0.3  int 12.68/37.98 deg  13.9mm  edge 10.83/43.98 deg   9.4mm  k [0.454, 0.436] fail 19
+  (72s)
+cylinder_r1     sig 2.5cm h 0.10 plane      int  2.90/ 6.51 deg   2.2mm  edge  4.16/13.29 deg   4.6mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 2.5cm h 0.10 sphere     int  2.91/ 6.65 deg   3.9mm  edge  5.07/18.91 deg   4.7mm  k [0.638, 0.638] fail 0
+cylinder_r1     sig 2.5cm h 0.10 quad_free  int  2.96/ 6.72 deg   4.0mm  edge  7.30/35.63 deg   6.0mm  k [2.403, -1.106] fail 0
+cylinder_r1     sig 2.5cm h 0.10 quad_t3    int  2.92/ 6.69 deg   3.9mm  edge  5.23/20.02 deg   4.8mm  k [1.046, 0.205] fail 0
+cylinder_r1     sig 2.5cm h 0.10 quad_t1    int  2.91/ 6.66 deg   3.9mm  edge  5.06/19.04 deg   4.7mm  k [0.697, 0.582] fail 0
+cylinder_r1     sig 2.5cm h 0.10 quad_t0.3  int  2.91/ 6.65 deg   3.9mm  edge  5.06/18.92 deg   4.7mm  k [0.645, 0.632] fail 0
+  (71s)
+cylinder_r1     sig 2.5cm h 0.20 plane      int  1.54/ 3.40 deg   2.4mm  edge  1.65/ 5.37 deg   4.2mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 2.5cm h 0.20 sphere     int  1.54/ 3.37 deg   3.3mm  edge  2.54/ 9.55 deg   3.5mm  k [0.556, 0.556] fail 0
+cylinder_r1     sig 2.5cm h 0.20 quad_free  int  1.57/ 3.41 deg   3.3mm  edge  4.91/17.19 deg   4.6mm  k [1.205, -0.123] fail 0
+cylinder_r1     sig 2.5cm h 0.20 quad_t3    int  1.57/ 3.40 deg   3.3mm  edge  4.08/14.00 deg   4.1mm  k [1.099, -0.007] fail 0
+cylinder_r1     sig 2.5cm h 0.20 quad_t1    int  1.55/ 3.36 deg   3.3mm  edge  2.94/10.46 deg   3.6mm  k [0.796, 0.321] fail 0
+cylinder_r1     sig 2.5cm h 0.20 quad_t0.3  int  1.55/ 3.39 deg   3.3mm  edge  2.59/ 9.65 deg   3.5mm  k [0.589, 0.527] fail 0
+  (74s)
+cylinder_r1     sig 2.5cm h 0.40 plane      int  0.88/ 1.89 deg   6.8mm  edge  3.86/ 6.46 deg   6.6mm  k [0.0, 0.0] fail 0
+cylinder_r1     sig 2.5cm h 0.40 sphere     int  0.93/ 2.21 deg   3.2mm  edge  4.87/ 8.52 deg   4.4mm  k [0.549, 0.549] fail 0
+cylinder_r1     sig 2.5cm h 0.40 quad_free  int  0.80/ 1.77 deg   3.2mm  edge  2.31/ 6.61 deg   3.7mm  k [1.038, 0.005] fail 0
+cylinder_r1     sig 2.5cm h 0.40 quad_t3    int  0.80/ 1.77 deg   3.2mm  edge  2.19/ 6.47 deg   3.7mm  k [1.027, 0.018] fail 0
+cylinder_r1     sig 2.5cm h 0.40 quad_t1    int  0.81/ 1.82 deg   3.2mm  edge  2.08/ 7.29 deg   3.7mm  k [0.956, 0.1] fail 0
+cylinder_r1     sig 2.5cm h 0.40 quad_t0.3  int  0.88/ 2.00 deg   3.2mm  edge  4.28/ 8.22 deg   4.2mm  k [0.701, 0.382] fail 0
+  (82s)
+paraboloid_1_2  sig 1.0cm h 0.05 plane      int  3.66/ 7.86 deg   1.2mm  edge  4.83/14.86 deg   2.4mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 1.0cm h 0.05 sphere     int  3.74/ 7.94 deg   2.2mm  edge  5.20/17.51 deg   2.8mm  k [0.838, 0.838] fail 0
+paraboloid_1_2  sig 1.0cm h 0.05 quad_free  int  3.80/ 8.16 deg   2.2mm  edge  6.44/37.30 deg   3.2mm  k [4.583, -3.382] fail 0
+paraboloid_1_2  sig 1.0cm h 0.05 quad_t3    int  3.74/ 7.95 deg   2.2mm  edge  5.19/17.59 deg   2.8mm  k [0.989, 0.687] fail 0
+paraboloid_1_2  sig 1.0cm h 0.05 quad_t1    int  3.74/ 7.95 deg   2.2mm  edge  5.20/17.52 deg   2.8mm  k [0.858, 0.815] fail 0
+paraboloid_1_2  sig 1.0cm h 0.05 quad_t0.3  int  3.74/ 7.95 deg   2.2mm  edge  5.20/17.51 deg   2.8mm  k [0.84, 0.836] fail 0
+  (70s)
+paraboloid_1_2  sig 1.0cm h 0.10 plane      int  1.40/ 2.91 deg   1.0mm  edge  1.62/ 4.02 deg   1.6mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 1.0cm h 0.10 sphere     int  1.39/ 2.89 deg   1.4mm  edge  2.12/ 6.73 deg   1.5mm  k [0.708, 0.708] fail 0
+paraboloid_1_2  sig 1.0cm h 0.10 quad_free  int  1.41/ 2.91 deg   1.4mm  edge  3.42/16.75 deg   2.2mm  k [1.505, -0.049] fail 0
+paraboloid_1_2  sig 1.0cm h 0.10 quad_t3    int  1.41/ 2.90 deg   1.4mm  edge  2.57/ 9.13 deg   1.6mm  k [1.159, 0.264] fail 0
+paraboloid_1_2  sig 1.0cm h 0.10 quad_t1    int  1.40/ 2.90 deg   1.4mm  edge  2.18/ 7.09 deg   1.5mm  k [0.801, 0.604] fail 0
+paraboloid_1_2  sig 1.0cm h 0.10 quad_t0.3  int  1.39/ 2.89 deg   1.4mm  edge  2.13/ 6.76 deg   1.5mm  k [0.718, 0.698] fail 0
+  (72s)
+paraboloid_1_2  sig 1.0cm h 0.20 plane      int  0.75/ 1.58 deg   2.3mm  edge  1.18/ 2.51 deg   2.1mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 1.0cm h 0.20 sphere     int  0.74/ 1.54 deg   1.5mm  edge  1.45/ 4.01 deg   1.4mm  k [0.714, 0.714] fail 0
+paraboloid_1_2  sig 1.0cm h 0.20 quad_free  int  0.73/ 1.55 deg   1.5mm  edge  2.25/ 6.43 deg   1.7mm  k [1.007, 0.435] fail 0
+paraboloid_1_2  sig 1.0cm h 0.20 quad_t3    int  0.73/ 1.55 deg   1.5mm  edge  2.08/ 5.77 deg   1.6mm  k [0.992, 0.446] fail 0
+paraboloid_1_2  sig 1.0cm h 0.20 quad_t1    int  0.73/ 1.55 deg   1.5mm  edge  1.70/ 4.51 deg   1.5mm  k [0.915, 0.517] fail 0
+paraboloid_1_2  sig 1.0cm h 0.20 quad_t0.3  int  0.74/ 1.54 deg   1.5mm  edge  1.47/ 4.11 deg   1.4mm  k [0.763, 0.663] fail 0
+  (77s)
+paraboloid_1_2  sig 1.0cm h 0.40 plane      int  0.65/ 1.60 deg   9.0mm  edge  3.87/ 5.07 deg   3.2mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 1.0cm h 0.40 sphere     int  0.43/ 0.89 deg   1.3mm  edge  1.60/ 3.82 deg   1.7mm  k [0.709, 0.709] fail 0
+paraboloid_1_2  sig 1.0cm h 0.40 quad_free  int  0.38/ 0.79 deg   1.3mm  edge  1.16/ 3.11 deg   1.7mm  k [0.935, 0.479] fail 0
+paraboloid_1_2  sig 1.0cm h 0.40 quad_t3    int  0.38/ 0.79 deg   1.3mm  edge  1.15/ 3.08 deg   1.7mm  k [0.934, 0.48] fail 0
+paraboloid_1_2  sig 1.0cm h 0.40 quad_t1    int  0.38/ 0.79 deg   1.3mm  edge  1.13/ 3.00 deg   1.6mm  k [0.926, 0.488] fail 0
+paraboloid_1_2  sig 1.0cm h 0.40 quad_t0.3  int  0.39/ 0.79 deg   1.3mm  edge  1.26/ 3.52 deg   1.6mm  k [0.865, 0.551] fail 0
+  (89s)
+paraboloid_1_2  sig 2.5cm h 0.05 plane      int  9.48/23.46 deg  10.5mm  edge 11.85/37.81 deg  10.1mm  k [0.0, 0.0] fail 13
+paraboloid_1_2  sig 2.5cm h 0.05 sphere     int  9.74/24.17 deg  13.2mm  edge 12.75/39.62 deg  11.3mm  k [0.957, 0.957] fail 13
+/home/yiinqiang/SMBC/EnvGS/EnvGS/mirror_lidar/tools/quadric_mls.py:254: RuntimeWarning: invalid value encountered in divide
+  b1 /= np.linalg.norm(b1, axis=1, keepdims=True)
+paraboloid_1_2  sig 2.5cm h 0.05 quad_free  int 10.38/27.91 deg  13.8mm  edge 13.53/66.47 deg  11.9mm  k [11.49, -9.597] fail 13
+paraboloid_1_2  sig 2.5cm h 0.05 quad_t3    int  9.76/24.20 deg  13.2mm  edge 12.75/39.62 deg  11.3mm  k [1.011, 0.925] fail 13
+paraboloid_1_2  sig 2.5cm h 0.05 quad_t1    int  9.75/24.20 deg  13.2mm  edge 12.75/39.62 deg  11.3mm  k [0.973, 0.962] fail 13
+paraboloid_1_2  sig 2.5cm h 0.05 quad_t0.3  int  9.75/24.21 deg  13.2mm  edge 12.75/39.61 deg  11.3mm  k [0.973, 0.966] fail 13
+  (71s)
+paraboloid_1_2  sig 2.5cm h 0.10 plane      int  2.92/ 5.96 deg   2.2mm  edge  6.91/17.04 deg   7.7mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 2.5cm h 0.10 sphere     int  2.92/ 6.03 deg   3.9mm  edge  9.57/25.14 deg   7.5mm  k [0.872, 0.872] fail 0
+paraboloid_1_2  sig 2.5cm h 0.10 quad_free  int  2.94/ 5.99 deg   4.0mm  edge 15.14/42.80 deg   8.8mm  k [2.478, -0.676] fail 0
+paraboloid_1_2  sig 2.5cm h 0.10 quad_t3    int  2.93/ 6.01 deg   3.9mm  edge 10.21/26.12 deg   7.6mm  k [1.19, 0.539] fail 0
+paraboloid_1_2  sig 2.5cm h 0.10 quad_t1    int  2.92/ 6.03 deg   3.9mm  edge  9.64/25.25 deg   7.5mm  k [0.922, 0.825] fail 0
+paraboloid_1_2  sig 2.5cm h 0.10 quad_t0.3  int  2.92/ 6.03 deg   3.9mm  edge  9.58/25.15 deg   7.5mm  k [0.878, 0.868] fail 0
+  (72s)
+paraboloid_1_2  sig 2.5cm h 0.20 plane      int  1.67/ 3.58 deg   2.7mm  edge  2.51/ 5.96 deg   6.0mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 2.5cm h 0.20 sphere     int  1.67/ 3.60 deg   3.8mm  edge  5.56/11.67 deg   5.1mm  k [0.794, 0.794] fail 0
+paraboloid_1_2  sig 2.5cm h 0.20 quad_free  int  1.69/ 3.61 deg   3.8mm  edge 10.56/24.96 deg   7.7mm  k [1.297, 0.281] fail 0
+paraboloid_1_2  sig 2.5cm h 0.20 quad_t3    int  1.68/ 3.61 deg   3.8mm  edge  8.22/17.80 deg   6.2mm  k [1.186, 0.39] fail 0
+paraboloid_1_2  sig 2.5cm h 0.20 quad_t1    int  1.68/ 3.59 deg   3.8mm  edge  6.22/12.67 deg   5.3mm  k [0.94, 0.641] fail 0
+paraboloid_1_2  sig 2.5cm h 0.20 quad_t0.3  int  1.67/ 3.60 deg   3.8mm  edge  5.63/11.76 deg   5.1mm  k [0.809, 0.776] fail 0
+  (76s)
+paraboloid_1_2  sig 2.5cm h 0.40 plane      int  1.00/ 2.11 deg   8.8mm  edge  2.94/ 4.99 deg   5.6mm  k [0.0, 0.0] fail 0
+paraboloid_1_2  sig 2.5cm h 0.40 sphere     int  0.92/ 2.00 deg   3.7mm  edge  2.96/ 6.72 deg   4.2mm  k [0.743, 0.743] fail 0
+paraboloid_1_2  sig 2.5cm h 0.40 quad_free  int  0.92/ 2.00 deg   3.7mm  edge  4.95/10.75 deg   5.7mm  k [1.005, 0.494] fail 0
+paraboloid_1_2  sig 2.5cm h 0.40 quad_t3    int  0.92/ 2.00 deg   3.7mm  edge  4.83/10.15 deg   5.6mm  k [0.999, 0.498] fail 0
+paraboloid_1_2  sig 2.5cm h 0.40 quad_t1    int  0.91/ 1.99 deg   3.7mm  edge  4.05/ 8.52 deg   5.0mm  k [0.963, 0.531] fail 0
+paraboloid_1_2  sig 2.5cm h 0.40 quad_t0.3  int  0.91/ 1.98 deg   3.7mm  edge  3.19/ 7.10 deg   4.3mm  k [0.832, 0.659] fail 0
+  (89s)
+wavy_1cm        sig 1.0cm h 0.05 plane      int  4.04/ 8.62 deg   1.3mm  edge  5.13/16.82 deg   2.4mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 1.0cm h 0.05 sphere     int  4.01/ 8.67 deg   2.4mm  edge  5.87/23.90 deg   3.1mm  k [-0.155, -0.155] fail 0
+wavy_1cm        sig 1.0cm h 0.05 quad_free  int  4.12/ 8.86 deg   2.4mm  edge  6.95/59.68 deg   3.9mm  k [4.438, -4.744] fail 0
+wavy_1cm        sig 1.0cm h 0.05 quad_t3    int  4.00/ 8.68 deg   2.4mm  edge  5.89/24.29 deg   3.1mm  k [-0.035, -0.279] fail 0
+wavy_1cm        sig 1.0cm h 0.05 quad_t1    int  4.01/ 8.67 deg   2.4mm  edge  5.88/23.95 deg   3.1mm  k [-0.151, -0.166] fail 0
+wavy_1cm        sig 1.0cm h 0.05 quad_t0.3  int  4.01/ 8.67 deg   2.4mm  edge  5.87/23.91 deg   3.1mm  k [-0.157, -0.16] fail 0
+  (71s)
+wavy_1cm        sig 1.0cm h 0.10 plane      int  1.53/ 3.29 deg   1.0mm  edge  2.06/ 5.00 deg   1.4mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 1.0cm h 0.10 sphere     int  1.53/ 3.29 deg   1.5mm  edge  2.24/ 5.84 deg   1.6mm  k [0.006, 0.006] fail 0
+wavy_1cm        sig 1.0cm h 0.10 quad_free  int  1.55/ 3.31 deg   1.5mm  edge  3.38/15.82 deg   2.1mm  k [0.926, -0.923] fail 0
+wavy_1cm        sig 1.0cm h 0.10 quad_t3    int  1.54/ 3.30 deg   1.5mm  edge  2.50/ 7.43 deg   1.7mm  k [0.487, -0.488] fail 0
+wavy_1cm        sig 1.0cm h 0.10 quad_t1    int  1.53/ 3.29 deg   1.5mm  edge  2.26/ 6.05 deg   1.6mm  k [0.118, -0.097] fail 0
+wavy_1cm        sig 1.0cm h 0.10 quad_t0.3  int  1.53/ 3.29 deg   1.5mm  edge  2.25/ 5.88 deg   1.6mm  k [0.018, -0.007] fail 0
+  (72s)
+wavy_1cm        sig 1.0cm h 0.20 plane      int  1.41/ 2.50 deg   1.8mm  edge  1.76/ 4.22 deg   1.6mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 1.0cm h 0.20 sphere     int  1.40/ 2.49 deg   1.5mm  edge  1.74/ 3.65 deg   1.7mm  k [-0.004, -0.004] fail 0
+wavy_1cm        sig 1.0cm h 0.20 quad_free  int  1.39/ 2.51 deg   1.5mm  edge  2.62/ 6.77 deg   2.0mm  k [0.475, -0.485] fail 0
+wavy_1cm        sig 1.0cm h 0.20 quad_t3    int  1.39/ 2.51 deg   1.5mm  edge  2.39/ 5.98 deg   1.9mm  k [0.442, -0.458] fail 0
+wavy_1cm        sig 1.0cm h 0.20 quad_t1    int  1.39/ 2.50 deg   1.5mm  edge  1.88/ 4.20 deg   1.7mm  k [0.305, -0.314] fail 0
+wavy_1cm        sig 1.0cm h 0.20 quad_t0.3  int  1.40/ 2.49 deg   1.5mm  edge  1.76/ 3.75 deg   1.7mm  k [0.065, -0.073] fail 0
+  (77s)
+wavy_1cm        sig 1.0cm h 0.40 plane      int  3.20/ 4.44 deg   3.8mm  edge  3.67/ 5.76 deg   2.9mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 1.0cm h 0.40 sphere     int  3.23/ 4.44 deg   2.4mm  edge  2.62/ 4.45 deg   2.7mm  k [-0.001, -0.001] fail 0
+wavy_1cm        sig 1.0cm h 0.40 quad_free  int  3.18/ 4.41 deg   2.4mm  edge  2.48/ 5.53 deg   2.2mm  k [0.194, -0.2] fail 0
+wavy_1cm        sig 1.0cm h 0.40 quad_t3    int  3.18/ 4.41 deg   2.4mm  edge  2.45/ 5.40 deg   2.2mm  k [0.192, -0.199] fail 0
+wavy_1cm        sig 1.0cm h 0.40 quad_t1    int  3.19/ 4.41 deg   2.4mm  edge  2.32/ 4.62 deg   2.1mm  k [0.185, -0.191] fail 0
+wavy_1cm        sig 1.0cm h 0.40 quad_t0.3  int  3.20/ 4.41 deg   2.4mm  edge  2.33/ 3.81 deg   2.4mm  k [0.128, -0.129] fail 0
+  (90s)
+wavy_1cm        sig 2.5cm h 0.05 plane      int 10.78/24.75 deg  11.4mm  edge 15.29/54.37 deg  13.9mm  k [0.0, 0.0] fail 7
+wavy_1cm        sig 2.5cm h 0.05 sphere     int 11.16/26.16 deg  14.5mm  edge 17.34/68.67 deg  16.7mm  k [-0.438, -0.438] fail 7
+wavy_1cm        sig 2.5cm h 0.05 quad_free  int 11.66/30.16 deg  15.2mm  edge 22.16/99.49 deg  17.5mm  k [11.07, -11.664] fail 7
+wavy_1cm        sig 2.5cm h 0.05 quad_t3    int 11.17/26.18 deg  14.5mm  edge 17.35/68.68 deg  16.7mm  k [-0.365, -0.531] fail 7
+wavy_1cm        sig 2.5cm h 0.05 quad_t1    int 11.18/26.18 deg  14.5mm  edge 17.35/68.66 deg  16.7mm  k [-0.438, -0.457] fail 7
+wavy_1cm        sig 2.5cm h 0.05 quad_t0.3  int 11.18/26.18 deg  14.5mm  edge 17.35/68.66 deg  16.7mm  k [-0.438, -0.456] fail 7
+  (70s)
+wavy_1cm        sig 2.5cm h 0.10 plane      int  3.12/ 6.69 deg   2.5mm  edge  6.82/20.51 deg   7.0mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 2.5cm h 0.10 sphere     int  3.13/ 6.69 deg   4.2mm  edge  9.32/30.64 deg   7.6mm  k [0.006, 0.006] fail 0
+wavy_1cm        sig 2.5cm h 0.10 quad_free  int  3.17/ 6.75 deg   4.2mm  edge 19.83/70.43 deg  11.0mm  k [1.786, -1.772] fail 0
+wavy_1cm        sig 2.5cm h 0.10 quad_t3    int  3.14/ 6.70 deg   4.2mm  edge 10.27/32.72 deg   7.9mm  k [0.285, -0.262] fail 0
+wavy_1cm        sig 2.5cm h 0.10 quad_t1    int  3.14/ 6.69 deg   4.2mm  edge  9.45/30.99 deg   7.7mm  k [0.04, -0.025] fail 0
+wavy_1cm        sig 2.5cm h 0.10 quad_t0.3  int  3.13/ 6.69 deg   4.2mm  edge  9.33/30.67 deg   7.7mm  k [0.008, 0.005] fail 0
+  (72s)
+wavy_1cm        sig 2.5cm h 0.20 plane      int  2.15/ 4.41 deg   2.6mm  edge  3.55/ 7.84 deg   4.6mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 2.5cm h 0.20 sphere     int  2.15/ 4.36 deg   3.6mm  edge  4.30/10.14 deg   4.7mm  k [-0.001, -0.001] fail 0
+wavy_1cm        sig 2.5cm h 0.20 quad_free  int  2.19/ 4.38 deg   3.6mm  edge  9.17/25.98 deg   7.1mm  k [0.627, -0.612] fail 0
+wavy_1cm        sig 2.5cm h 0.20 quad_t3    int  2.17/ 4.36 deg   3.6mm  edge  6.34/15.47 deg   5.4mm  k [0.473, -0.452] fail 0
+wavy_1cm        sig 2.5cm h 0.20 quad_t1    int  2.15/ 4.36 deg   3.6mm  edge  4.59/11.14 deg   4.8mm  k [0.149, -0.156] fail 0
+wavy_1cm        sig 2.5cm h 0.20 quad_t0.3  int  2.14/ 4.36 deg   3.6mm  edge  4.35/10.26 deg   4.7mm  k [0.015, -0.02] fail 0
+  (76s)
+wavy_1cm        sig 2.5cm h 0.40 plane      int  3.25/ 5.07 deg   4.2mm  edge  3.90/ 6.86 deg   4.8mm  k [0.0, 0.0] fail 0
+wavy_1cm        sig 2.5cm h 0.40 sphere     int  3.29/ 5.07 deg   4.0mm  edge  3.47/ 6.57 deg   4.6mm  k [-0.001, -0.001] fail 0
+wavy_1cm        sig 2.5cm h 0.40 quad_free  int  3.27/ 5.03 deg   4.0mm  edge  4.84/10.87 deg   6.0mm  k [0.218, -0.196] fail 0
+wavy_1cm        sig 2.5cm h 0.40 quad_t3    int  3.27/ 5.04 deg   4.0mm  edge  4.59/10.16 deg   5.7mm  k [0.213, -0.192] fail 0
+wavy_1cm        sig 2.5cm h 0.40 quad_t1    int  3.27/ 5.04 deg   4.0mm  edge  3.77/ 7.75 deg   5.0mm  k [0.182, -0.163] fail 0
+wavy_1cm        sig 2.5cm h 0.40 quad_t0.3  int  3.28/ 5.06 deg   4.0mm  edge  3.52/ 6.80 deg   4.7mm  k [0.065, -0.059] fail 0
+  (89s)

@@ -5,6 +5,7 @@ configs:
 
 model_cfg:
     sampler_cfg:
+        shared_reflection: False # trained with the old default (env Gaussians); default became True on 2026-10-21
         sh_start_iter: 10000
 
 runner_cfg:

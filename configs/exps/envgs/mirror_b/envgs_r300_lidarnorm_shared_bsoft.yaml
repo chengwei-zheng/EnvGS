@@ -1,0 +1,27 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/r300_lidarnorm.yaml # dataset usage configuration
+
+# envgs_r300_lidarnorm_shared with a soft specular reset: beta *= 0.1 at each reset instead of min(beta, 0.001)
+# (sampler reset_specular_scale, 2026-10-22), plus the beta logging of envgs_r300_lidarnorm_shared_betalog.
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True
+        reset_specular_scale: 0.1
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: MirrorRegionSupervisor
+        mirror_mask_dir: data/datasets/mirror_b/r300_lidarnorm_open3/mirror_masks
+        log_mirror_stats: True
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

@@ -6,6 +6,8 @@ configs:
 # Ablation of envgs_b300 (same as envgs_walk400_2mirrors_nmask on the bathroom): no monocular normal loss on
 # GT mirror pixels (persp/masks == 3, normals stored as black there, see norm_ignore_zero). Same schedule otherwise.
 model_cfg:
+    sampler_cfg:
+        shared_reflection: False # trained with the old default (env Gaussians); default became True on 2026-10-21
     supervisor_cfg:
         perc_loss_start_iter: 45000 # less iterations for faster training
         norm_ignore_zero: True

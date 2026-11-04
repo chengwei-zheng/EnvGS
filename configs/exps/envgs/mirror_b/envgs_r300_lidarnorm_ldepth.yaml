@@ -1,0 +1,27 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/r300_lidarnorm.yaml # dataset usage configuration
+
+# envgs_r300_lidarnorm + LiDAR first-echo depth: per camera, the nearest echo of every zone (by range, no echo types)
+# projected into the image (mirror_lidar/tools/lidar_first_echo_depth.py -> data/datasets/mirror_b/r300_lidar_depth),
+# L1 on the rendered z-depth at those pixels (LidarDepthSupervisor), from iteration 0.
+model_cfg:
+    sampler_cfg:
+        shared_reflection: False # trained with the old default (env Gaussians); default became True on 2026-10-21
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: LidarDepthSupervisor
+        lidar_depth_dir: data/datasets/mirror_b/r300_lidar_depth
+        lidar_dpt_loss_weight: 0.1
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

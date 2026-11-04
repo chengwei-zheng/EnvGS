@@ -1,0 +1,27 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/r300lp_lidarnorm.yaml # dataset usage configuration
+
+# 2026-10-22: envgs_r300_lidarnorm_shared on the lamp-panel re-render (dataset_r300_lamppanel), + beta logging.
+# Baseline for envgs_r300lp_lidarnorm_shared_{bfilt,bsoft}.
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True # reflections trace the base Gaussians (SH DC colour), env Gaussians unused
+
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: MirrorRegionSupervisor
+        mirror_mask_dir: data/datasets/mirror_b/r300lp_lidarnorm/mirror_masks
+        log_mirror_stats: True # logging only: beta / reflection share / c_ref on the mirror, beta elsewhere, traced pixel fraction
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

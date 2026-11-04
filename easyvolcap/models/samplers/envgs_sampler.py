@@ -39,6 +39,7 @@ class EnvGSSampler(Gaussian2DSampler):
                  color_sabotage_until_iter: int = 24000,
                  color_sabotage_interval: int = 1000,
                  reset_specular_all: bool = False,
+                 reset_specular_scale: float = 0.0,  # 2026-10-22: > 0 multiplies beta by this at each reset instead of min(beta, init_specular)
 
                  # Gaussian configs
                  env_preload_gs: str = '',
@@ -88,12 +89,25 @@ class EnvGSSampler(Gaussian2DSampler):
                  n_sample_dirs: int = 1, # number of sampled reflected directions
                  specular_filtering_start_iter: int = -1,  # start to filter pixels with large specular values
                  specular_filtering_percent: float = 0.75,  # percentage of pixels to be filtered
+                 specular_filtering_threshold: float = 0.0,  # 2026-10-22: > 0 traces pixels with beta > this instead of the percentile
+                 specular_filtering_pause_iter: int = 0,  # 2026-10-22: trace every pixel for this many iterations after each beta reset (beta recovery)
                  acc_filtering_start_iter: int = -1,  # start to filter pixels with large accumulated weights
                  multi_sampling_start_iter: int = -1,  # start to use multi-sample for reflection rendering
                  # Shared-Gaussian reflection (2026-10-17): reflected rays are traced against the base Gaussians
                  # (`self.pcd`) instead of the environment Gaussians; the hit colour is the view-independent SH DC term
                  # SH2RGB(_features_dc), one bounce. The environment Gaussians are kept (checkpoint layout) but unused.
-                 shared_reflection: bool = False,
+                 shared_reflection: bool = True,  # 2026-10-21: default on (reflections trace the base Gaussians); old runs pin False in their exp configs
+                 # Sub-pixel reflection multi-sampling (2026-10-30, curved mirrors): each traced pixel shoots ref_ss reflected rays
+                 # from stratified sub-pixel positions (sqrt(ref_ss) x sqrt(ref_ss) grid, jittered inside each cell while
+                 # training), with the normal, surface point and camera ray bilinearly interpolated from the rendered maps,
+                 # and averages their colours: anti-aliases the reflection cone of a curved mirror. 1 = one ray per pixel (upstream).
+                 # Only while specular / acc filtering is active (otherwise every pixel is traced once).
+                 ref_ss: int = 1,
+                 # Explicit mirror surface for the reflection normal (2026-11-02, mirror_surface.py): empty = off (upstream: rendered
+                 # 2DGS normal everywhere). E.g. dotdict(type='quadric', fit='.../patch0.npz', learnable=False). The reflected ray of
+                 # a pixel whose camera ray hits the surface (inside its extent, within `tol` of the rendered depth) uses the surface
+                 # normal; its origin stays the rendered depth. Requires ref_ss = 1.
+                 mirror_surface_cfg: dotdict = dotdict(),
 
                  # Default parameters for Gaussian2DSampler
                  **kwargs,
@@ -121,6 +135,7 @@ class EnvGSSampler(Gaussian2DSampler):
         self.color_sabotage_until_iter = color_sabotage_until_iter
         self.color_sabotage_interval = color_sabotage_interval
         self.reset_specular_all = reset_specular_all
+        self.reset_specular_scale = reset_specular_scale
 
         # Reflection related parameters
         self.use_base_tracing = use_base_tracing
@@ -129,9 +144,18 @@ class EnvGSSampler(Gaussian2DSampler):
         self.detach = detach
         self.specular_filtering_start_iter = specular_filtering_start_iter
         self.specular_filtering_percent = specular_filtering_percent
+        self.specular_filtering_threshold = specular_filtering_threshold
+        self.specular_filtering_pause_iter = specular_filtering_pause_iter
         self.acc_filtering_start_iter = acc_filtering_start_iter
         self.multi_sampling_start_iter = multi_sampling_start_iter
         self.shared_reflection = shared_reflection
+        self.ref_ss = ref_ss
+        assert int(round(ref_ss ** 0.5)) ** 2 == ref_ss, 'ref_ss must be a square number'
+        self.msurf = None
+        if mirror_surface_cfg:
+            from easyvolcap.models.samplers.mirror_surface import build_mirror_surface
+            assert ref_ss == 1, 'mirror_surface_cfg: sub-pixel reflection sampling not supported'
+            self.msurf = build_mirror_surface(**mirror_surface_cfg)
 
         # Environment Gaussian related parameters
         self.env_preload_gs = env_preload_gs
@@ -298,6 +322,7 @@ class EnvGSSampler(Gaussian2DSampler):
                     pcd.reset_specular(
                         reset_specular=self.init_specular,
                         reset_specular_all=self.reset_specular_all,
+                        reset_specular_scale=self.reset_specular_scale,
                         optimizer=optimizer,
                         prefix='sampler.pcd.'
                     )
@@ -424,10 +449,32 @@ class EnvGSSampler(Gaussian2DSampler):
         output.iter = batch.meta.iter
         return output
 
+    def is_specular_filtering(self, iter):
+        # 2026-10-22: no filtering during the first specular_filtering_pause_iter iterations after each beta reset
+        # (resets happen at multiples of opacity_reset_interval, see update_dif_gaussians): right after a reset beta is
+        # ~0.001 everywhere, mirror pixels would drop out and beta gets no gradient to recover
+        iter = int(iter)
+        if self.specular_filtering_start_iter <= 0 or iter < self.specular_filtering_start_iter: return False
+        if self.specular_filtering_pause_iter > 0:
+            r = self.opacity_reset_interval * (iter // self.opacity_reset_interval)
+            if self.opacity_reset_interval < r < self.densify_until_iter and r > self.render_reflection_start_iter and \
+               iter - r < self.specular_filtering_pause_iter: return False
+        return True
+
     def get_reflect_rays(self, ray_o: torch.Tensor, ray_d: torch.Tensor, coords: torch.Tensor,
                          output: dotdict, batch: dotdict):
         # Compute the reflected rays direction, -d+d' = -2(d·n)n -> d' = d - 2(d·n)n
         norm = normalize(output.norm_map)  # (B, P, 3)
+        if self.msurf is not None:
+            # explicit mirror surface (mirror_surface.py): surface normal on the mirror pixels, rendered normal elsewhere;
+            # output.norm_map (and every surfel loss on it) is left untouched
+            self.msurf.iter = int(batch.meta.iter)
+            n_s, m_s = self.msurf.reflection_normals(ray_o, ray_d, output.dpt_map)
+            norm = torch.where(m_s, n_s, norm)
+            output.msurf_frac = m_s.float().mean()
+            if self.training:
+                output.msurf_losses = self.msurf.losses()
+                if int(batch.meta.iter) % 100 == 0: output.msurf_stats = self.msurf.stats()
         ref_d = ray_d - 2 * torch.sum(ray_d * norm, dim=-1, keepdim=True) * norm  # (B, P, 3)
 
         # Compute the surface coordinate as the intersection point
@@ -438,14 +485,18 @@ class EnvGSSampler(Gaussian2DSampler):
         output.ref_d = ref_d  # (B, P, 3)
 
         # Prepare for multi-sampling and specular filtering
-        is_specular_filtering = self.specular_filtering_start_iter > 0 and batch.meta.iter >= self.specular_filtering_start_iter
+        is_specular_filtering = self.is_specular_filtering(batch.meta.iter)
         is_acc_filtering = self.acc_filtering_start_iter > 0 and batch.meta.iter >= self.acc_filtering_start_iter
         H, W = batch.meta.H[0].item(), batch.meta.W[0].item()
 
         if is_specular_filtering or is_acc_filtering:
             # Only perform reflection tracing on pixels with high specular values or accumulated weights
             if is_specular_filtering:
-                ref_msk = output.spec_map[..., 0] > torch.quantile(output.spec_map[..., 0], self.specular_filtering_percent)
+                if self.specular_filtering_threshold > 0:
+                    ref_msk = output.spec_map[..., 0] > self.specular_filtering_threshold
+                    if not ref_msk.any(): ref_msk.view(-1)[output.spec_map[..., 0].argmax()] = True  # tracer needs >= 1 ray
+                else:
+                    ref_msk = output.spec_map[..., 0] > torch.quantile(output.spec_map[..., 0], self.specular_filtering_percent)
             else:
                 ref_msk = output.acc_map[..., 0] > 0.75
             ref_o = ref_o[ref_msk][None]  # (N, S, 3)
@@ -453,6 +504,10 @@ class EnvGSSampler(Gaussian2DSampler):
             # Store the specular mask for later scattering
             output.ref_msk = ref_msk  # (B, P)
 
+        if self.ref_ss > 1 and (is_specular_filtering or is_acc_filtering):
+            # Multi-sampled reflections only on the filtered pixels: tracing every pixel K times (before filtering starts and
+            # in the pauses after beta resets) made training ~5 s / iteration on c480, so those iterations keep one ray per pixel
+            ref_o, ref_d = self.get_reflect_rays_ss(ray_o, ray_d, output, H, W)  # (1, N * K, 3)
         if not (is_specular_filtering or is_acc_filtering):
             # This branch is for compatibility with the original code
             ref_o = ref_o.reshape(H, W, 3)  # (H, W, 3)
@@ -461,17 +516,45 @@ class EnvGSSampler(Gaussian2DSampler):
         if self.detach: return ref_o.detach(), ref_d.detach()
         else: return ref_o, ref_d
 
+    def ref_surface(self, o: torch.Tensor, d: torch.Tensor, X: torch.Tensor, N: torch.Tensor):
+        # Hook for the sub-pixel reflection surface (point X, normal N on camera ray o + t d); identity here,
+        # replaced by the GT sphere in mirror_lidar/tools/export_oracle_sphere.py
+        return X, N
+
+    def get_reflect_rays_ss(self, ray_o: torch.Tensor, ray_d: torch.Tensor, output: dotdict, H: int, W: int):
+        # Sub-pixel reflected rays for the pixels in output.ref_msk: (1, N * K, 3) origins and directions, K = self.ref_ss
+        # consecutive rays per pixel (store_env_gaussian_output averages them)
+        k = int(round(self.ref_ss ** 0.5)); K = k * k
+        idx = output.ref_msk[0].nonzero()[:, 0]  # (N,), row-major pixel index
+        n = len(idx)
+        g = (torch.arange(k, device=idx.device, dtype=torch.float) + 0.5) / k - 0.5  # cell centres in (-0.5, 0.5)
+        off = torch.stack(torch.meshgrid(g, g, indexing='ij'), -1).reshape(1, K, 2).expand(n, K, 2)  # (N, K, 2) (dy, dx)
+        if self.training: off = off + (torch.rand_like(off) - 0.5) / k
+        py = (idx // W).float()[:, None] + off[..., 0]
+        px = (idx % W).float()[:, None] + off[..., 1]
+        grid = torch.stack([px / max(W - 1, 1) * 2 - 1, py / max(H - 1, 1) * 2 - 1], -1)[None]  # (1, N, K, 2), align_corners
+        X = ray_o + ray_d * output.dpt_map  # (B, P, 3)
+        maps = torch.cat([ray_d, X, output.norm_map], -1)[0].reshape(H, W, 9).permute(2, 0, 1)[None]  # (1, 9, H, W)
+        smp = F.grid_sample(maps, grid, mode='bilinear', padding_mode='border', align_corners=True)[0].permute(1, 2, 0)  # (N, K, 9)
+        d, Xs, Ns = smp[..., 0:3], smp[..., 3:6], normalize(smp[..., 6:9])
+        o = ray_o[0, idx][:, None].expand(n, K, 3)
+        Xs, Ns = self.ref_surface(o, d, Xs, Ns)
+        ref_d = d - 2 * torch.sum(d * Ns, dim=-1, keepdim=True) * Ns
+        return Xs.reshape(1, n * K, 3), ref_d.reshape(1, n * K, 3)
+
     def store_env_gaussian_output(self, middle: dotdict, output: dotdict, batch: dotdict):
         # Reshape and permute the middle output
         middle = self.store_gaussian_output(middle, batch)
 
         # Prepare for multi-sampling and specular filtering
-        is_specular_filtering = self.specular_filtering_start_iter > 0 and batch.meta.iter >= self.specular_filtering_start_iter
+        is_specular_filtering = self.is_specular_filtering(batch.meta.iter)
         is_acc_filtering = self.acc_filtering_start_iter > 0 and batch.meta.iter >= self.acc_filtering_start_iter
 
         if is_specular_filtering or is_acc_filtering:
+            output.ref_frac = output.ref_msk.float().mean()  # fraction of traced pixels (logged by MirrorRegionSupervisor)
             # Update the RGB output with the specular or accumulated weight filtering
             rgb_map = middle.rgb_map[0]
+            if self.ref_ss > 1: rgb_map = rgb_map.reshape(-1, self.ref_ss, rgb_map.shape[-1]).mean(1)  # average the sub-pixel rays (get_reflect_rays_ss)
             output.rgb_map[output.ref_msk] = (1 - output.spec_map[output.ref_msk]) * output.rgb_map[output.ref_msk] + output.spec_map[output.ref_msk] * rgb_map
             ref_rgb_map = torch.zeros_like(output.rgb_map)
             ref_rgb_map[output.ref_msk] = rgb_map
@@ -480,7 +563,7 @@ class EnvGSSampler(Gaussian2DSampler):
             # Update the RGB output with the reflection
             output.rgb_map = (1 - output.spec_map) * output.rgb_map + output.spec_map * middle.rgb_map
             output.ref_rgb_map = middle.rgb_map  # (B, P, 3)
-        output.ref_rgb_map = output.ref_rgb_map * output.spec_map * 2  # (B, P, 3), * 2 to make it brighter for better visualization
+        output.ref_rgb_map = output.ref_rgb_map * output.spec_map  # (B, P, 3), beta * c_ref; RENDER = DIFFUSE + REFLECTION (upstream had * 2 for brightness, dropped 2026-10-21; outputs written before that are x2)
 
         # Store the environment Gaussian output for supervision
         output.env_opacity = self.env.get_opacity  # (P, 1)

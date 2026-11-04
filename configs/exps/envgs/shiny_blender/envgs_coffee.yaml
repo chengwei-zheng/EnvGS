@@ -3,5 +3,9 @@ configs:
     - configs/models/envgs_synth.yaml # 2dgs model configuration
     - configs/datasets/shiny_blender/coffee.yaml # dataset usage configuration
 
+model_cfg:
+    sampler_cfg:
+        shared_reflection: False # trained with the old default (env Gaussians); default became True on 2026-10-21
+
 # prettier-ignore
 exp_name: {{fileBasenameNoExtension}}

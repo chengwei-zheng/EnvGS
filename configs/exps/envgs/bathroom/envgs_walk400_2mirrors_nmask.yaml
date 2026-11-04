@@ -7,6 +7,8 @@ configs:
 # (it predicts the normals of the reflected room), so the monocular normal loss is disabled on
 # GT mirror + glass pixels (normals stored as black there, see norm_ignore_zero). Same schedule otherwise.
 model_cfg:
+    sampler_cfg:
+        shared_reflection: False # trained with the old default (env Gaussians); default became True on 2026-10-21
     supervisor_cfg:
         perc_loss_start_iter: 45000 # less iterations for faster training
         norm_ignore_zero: True

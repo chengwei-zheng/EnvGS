@@ -1,0 +1,53 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/f300_lidarnorm.yaml # dataset usage configuration
+
+# 2026-10-22: envgs_r300lp_lidarnorm_shared, tracing reflections only on pixels with rendered beta > 0.02 (non-mirror
+# beta ~0.004, mirror ~0.6 in envgs_r300_lidarnorm_shared_betalog), but every pixel during the first 1500 iterations
+# after reflections start (3000) and after each beta reset (6k..18k, every 3000): beta needs ~1000 iterations to recover.
+# 2026-10-27: + extra depth-normal consistency on the LiDAR mirror interior (mirror_gs_norm_loss_weight 1.0, no depth scale; the
+# mirror bumps make up only 1-2% of the full-image gs_norm loss with weight 0.04): against the bumps on the mirror.
+# 2026-10-27: as _mgsn1, but weight 0.2 from iteration 3000 (reflections start): _mgsn1 (1.0 from 0) grew the mirror-plane surfels
+# 0-5 cm past the rim (rim floaters, blurred wall behind the mirror, walls -5 dB).
+# 2026-10-28: the _mgsn02 setting (user's pick) on scene B_framed (dataset_f300, thick framed mirror).
+# 2026-10-28: user: f300 _mgsn02 looks good, continue on this scene; mirror_gs_norm weight sweep: 0.5 (was 0.2).
+# 2026-11-04: + learnable mirror surface for the reflection normal (as envgs_cv300_msurf_spline_learn: cubic B-spline height field, 2 cm
+# control grid), initialised from the global LiDAR quadric fit of the flat mirror (mirror_surface_f300_20261104/quadric_rd06: normal 0.034 deg
+# interior / 0.051 deg outer 5 cm vs GT, covers 100% of the GT mirror pixels). User: the flat mirror was not perfect either (mirror 28.56 dB),
+# the exact reflection normal should help here too.
+model_cfg:
+    sampler_cfg:
+        mirror_surface_cfg: # explicit mirror surface for the reflection normal (samplers/mirror_surface.py)
+            type: spline
+            fit: data/result/envgs/mirror_b/mirror_surface_f300_20261104/quadric_rd06/patch0.npz
+            learnable: True
+            ctrl: 0.02 # cubic B-spline control spacing (m)
+            learn_start_iter: 4500
+            anchor_weight: 0.01
+            reg_weight: 1.0e-4 # mean squared change of the control second differences, in curvature units (1/m)
+        shared_reflection: True # reflections trace the base Gaussians (SH DC colour), env Gaussians unused
+        specular_filtering_start_iter: 4500
+        specular_filtering_threshold: 0.02
+        specular_filtering_pause_iter: 1500
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: MirrorRegionSupervisor
+        mirror_mask_dir: data/datasets/mirror_b/f300_lidarnorm/mirror_masks
+        log_mirror_stats: True # logging only: beta / reflection share / c_ref on the mirror, beta elsewhere, traced pixel fraction
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+        mirror_gs_norm_loss_weight: 0.5 # extra 1 - n_render . n_depth on the LiDAR mirror interior (global gs_norm 0.04 x depth scale)
+        mirror_gs_norm_start_iter: 3000
+
+runner_cfg:
+    optimizer_cfg:
+        lr_table:
+            msurf_h: 2.0e-6 # spline control heights (m)
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

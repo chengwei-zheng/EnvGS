@@ -1,0 +1,34 @@
+# ABORTED 2026-10-27 at ~7k iterations: training PSNR 2-5 dB below bfilt from iteration 3000 on (gs_dist too strong) -> _dist10
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/r300lp_lidarnorm.yaml # dataset usage configuration
+
+# 2026-10-22: envgs_r300lp_lidarnorm_shared, tracing reflections only on pixels with rendered beta > 0.02 (non-mirror
+# beta ~0.004, mirror ~0.6 in envgs_r300_lidarnorm_shared_betalog), but every pixel during the first 1500 iterations
+# after reflections start (3000) and after each beta reset (6k..18k, every 3000): beta needs ~1000 iterations to recover.
+# 2026-10-27: + 2DGS depth distortion loss, weight 100 (2DGS: 100-1000; full-image mean ~1.3e-4 at the end of bfilt, i.e. ~0.013,
+# comparable to the L1 term): against the bumps on the mirror (front / back surfel layers that average to the right depth).
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True # reflections trace the base Gaussians (SH DC colour), env Gaussians unused
+        specular_filtering_start_iter: 4500
+        specular_filtering_threshold: 0.02
+        specular_filtering_pause_iter: 1500
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: MirrorRegionSupervisor
+        mirror_mask_dir: data/datasets/mirror_b/r300lp_lidarnorm/mirror_masks
+        log_mirror_stats: True # logging only: beta / reflection share / c_ref on the mirror, beta elsewhere, traced pixel fraction
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+        gs_dist_loss_weight: 100 # 2DGS depth distortion (sum w_i w_j (m_i - m_j)^2, m = normalized depth), from iteration 3000
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

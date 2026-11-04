@@ -1,7 +1,7 @@
 # per-object depth / PSNR + specular weight on the mirror, scene B runs (1296x972, scale 1 = GT poses)
 import os, sys, glob, json, cv2, numpy as np
 from eval_synthetic_glass import read_exr_depth
-P = '/home/yiinqiang/SMBC/blender/project/proj_indoor_mirror_b/dataset_b300/persp'
+P = os.environ.get('GT_PERSP', '/home/yiinqiang/SMBC/blender/project/proj_indoor_mirror_b/dataset_b300/persp')  # r300: GT_PERSP=<proj_indoor_mirror_b_rot30/dataset_r300/persp>
 E = '/home/yiinqiang/SMBC/EnvGS/EnvGS/data/result/envgs/mirror_b/envgs_'
 tj = json.load(open(P + '/transforms.json')); on = tj['object_names']
 sub = lambda a: a[1::2, 1::2][:972, :1296]

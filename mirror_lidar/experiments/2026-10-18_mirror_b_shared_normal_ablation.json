@@ -1,97 +1,192 @@
 {
-  "id": "2026-10-18_mirror_b_shared_normal_ablation",
-  "question": "Does the shared-Gaussian reflection (2026-10-17_mirror_b_shared_dc) still work without the GT mirror normal? (user: the mirror image is much sharper but the mirror is not perfectly flat; try 1) plain StableNormal normals, 2) no normal prior on the mirror = nmask)",
-  "parent_experiment": "2026-10-17_mirror_b_shared_dc (envgs_b300_gtnorm_shared): same code, same shared_reflection: True, DC hit colour, one bounce",
-  "started": "2026-10-18 14:53:01 JST",
-  "status": "running",
-  "code": "identical to 2026-10-17_mirror_b_shared_dc.patch (checked with cmp at launch); EnvGS HEAD 09993470ae76854e2dae1118374031c9b32891ac + that patch",
-  "runs": {
-    "stablenormal_shared": {
-      "meaning": "1) plain StableNormal prior everywhere, mirror included (user correction at 15:00: 'the first one should use the StableNormal normals directly')",
-      "exp_name": "envgs/mirror_b/envgs_b300_shared",
-      "exp_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.stablenormal_shared.exp.yaml",
-      "resolved_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.stablenormal_shared.resolved.yaml",
-      "data_root": "data/datasets/mirror_b/b300",
-      "changes_vs_gtnorm_shared": {
-        "data_root": "b300 instead of b300_gtnorm (StableNormal on mirror pixels instead of GT plane normal)"
-      },
-      "changes_vs_envgs_b300": {
-        "sampler_cfg.shared_reflection": "true (only line that differs in the resolved config)"
-      },
-      "started": "2026-10-18 15:00:03 JST",
-      "gpu": "GPU0 RTX 3090",
-      "command": "CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_shared.yaml exp_name=envgs/mirror_b/envgs_b300_shared",
-      "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_shared_train.log"
-    },
-    "nmask_shared": {
-      "meaning": "2) no normal prior on mirror pixels only (StableNormal elsewhere), same as envgs_b300_nmask",
-      "exp_name": "envgs/mirror_b/envgs_b300_nmask_shared",
-      "exp_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nmask_shared.exp.yaml",
-      "resolved_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nmask_shared.resolved.yaml",
-      "data_root": "data/datasets/mirror_b/b300_nmask (GT mirror pixels persp/masks == 3 stored black in normals/)",
-      "changes_vs_gtnorm_shared": {
-        "data_root": "b300_nmask instead of b300_gtnorm",
-        "supervisor_cfg.norm_ignore_zero": "true (black prior pixels skipped in the normal loss)"
-      },
-      "gpu": "GPU1 RTX 3090",
-      "command": "CUDA_VISIBLE_DEVICES=1 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_nmask_shared.yaml exp_name=envgs/mirror_b/envgs_b300_nmask_shared",
-      "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_nmask_shared_train.log"
-    }
+ "id": "2026-10-18_mirror_b_shared_normal_ablation",
+ "question": "Does the shared-Gaussian reflection (2026-10-17_mirror_b_shared_dc) still work without the GT mirror normal? (user: the mirror image is much sharper but the mirror is not perfectly flat; try 1) plain StableNormal normals, 2) no normal prior on the mirror = nmask)",
+ "parent_experiment": "2026-10-17_mirror_b_shared_dc (envgs_b300_gtnorm_shared): same code, same shared_reflection: True, DC hit colour, one bounce",
+ "started": "2026-10-18 14:53:01 JST",
+ "status": "finished (stablenormal_shared 2026-10-19 15:07, nmask_shared 2026-10-19 01:51)",
+ "code": "identical to 2026-10-17_mirror_b_shared_dc.patch (checked with cmp at launch); EnvGS HEAD 09993470ae76854e2dae1118374031c9b32891ac + that patch",
+ "runs": {
+  "stablenormal_shared": {
+   "meaning": "1) plain StableNormal prior everywhere, mirror included (user correction at 15:00: 'the first one should use the StableNormal normals directly')",
+   "exp_name": "envgs/mirror_b/envgs_b300_shared",
+   "exp_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.stablenormal_shared.exp.yaml",
+   "resolved_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.stablenormal_shared.resolved.yaml",
+   "data_root": "data/datasets/mirror_b/b300",
+   "changes_vs_gtnorm_shared": {
+    "data_root": "b300 instead of b300_gtnorm (StableNormal on mirror pixels instead of GT plane normal)"
+   },
+   "changes_vs_envgs_b300": {
+    "sampler_cfg.shared_reflection": "true (only line that differs in the resolved config)"
+   },
+   "started": "2026-10-18 15:00:03 JST",
+   "gpu": "GPU0 RTX 3090",
+   "command": "CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_shared.yaml exp_name=envgs/mirror_b/envgs_b300_shared",
+   "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_shared_train.log"
   },
-  "resolved_config_diff_check": "diff vs envgs_b300_gtnorm_shared resolved config (after renaming exp_name) shows only the data_root / preload paths and the one supervisor line listed above",
-  "common_settings": "60000 iters (120 x 500), perc_loss_start_iter 45000, render_reflection_start_iter 3000, val = every 8th frame (38 views), GT poses, conda env envgs (torch 2.3.1+cu118)",
-  "reference_results_val38": {
-    "gtnorm_shared": {
-      "psnr": 36.56,
-      "psnr_mirror": 28.83,
-      "psnr_opaque": 39.54,
-      "mirror_depth_on_plane_frac": 0.999,
-      "mirror_depth_mae_m": 0.004,
-      "specular_weight_mirror": 0.664
-    },
-    "gtnorm (env GS)": {
-      "psnr": 36.15,
-      "psnr_mirror": 26.72,
-      "psnr_opaque": 40.75,
-      "mirror_depth_on_plane_frac": 1.0,
-      "mirror_depth_mae_m": 0.005,
-      "specular_weight_mirror": 0.311
-    },
-    "b300 (env GS, StableNormal)": {
-      "psnr": 34.71,
-      "psnr_mirror": 25.94,
-      "psnr_opaque": 39.89,
-      "mirror_depth_on_plane_frac": 0.919,
-      "mirror_depth_mae_m": 0.068,
-      "specular_weight_mirror": 0.253
-    },
-    "nmask (env GS)": {
-      "psnr": 35.16,
-      "psnr_mirror": 25.0,
-      "psnr_opaque": 41.22,
-      "mirror_depth_on_plane_frac": 0.905,
-      "mirror_depth_mae_m": 0.052,
-      "specular_weight_mirror": 0.337
-    }
-  },
-  "evaluation_plan": "eval_mirror_b_run.sh <tag> dataset_b300 <gpu>; tools/per_obj_mirror_b.py; frame 88 crop vs GT; additionally mirror flatness: spread of rendered mirror depth around the GT plane (user noted the mirror is not perfectly flat)",
-  "results": null,
-  "aborted_runs": {
-    "nonorm_shared": {
-      "meaning": "1) no monocular normal prior at all",
-      "exp_name": "envgs/mirror_b/envgs_b300_nonorm_shared",
-      "exp_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nonorm_shared.exp.yaml",
-      "resolved_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nonorm_shared.resolved.yaml",
-      "data_root": "data/datasets/mirror_b/b300 (StableNormal normals still loaded by the dataset, not used by any loss)",
-      "changes_vs_gtnorm_shared": {
-        "data_root": "b300 instead of b300_gtnorm (images/poses/sparse are the same files via symlink; envs/points3D.ply is a byte copy)",
-        "supervisor_cfg.norm_loss_weight": "0.0 instead of 0.01"
-      },
-      "kept": "gs_norm_loss_weight 0.04 (prior-free consistency between rendered normal and depth-derived normal), all other losses and schedule",
-      "gpu": "GPU0 RTX 3090",
-      "command": "CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_nonorm_shared.yaml exp_name=envgs/mirror_b/envgs_b300_nonorm_shared",
-      "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_nonorm_shared_train.log",
-      "status": "ABORTED 2026-10-18 ~15:00 after ~7 min (misunderstanding: user meant StableNormal, not no prior). Not evaluated. Config copies renamed ABORTED_*; partial outputs under data/*/envgs/mirror_b/envgs_b300_nonorm_shared left in place."
-    }
+  "nmask_shared": {
+   "meaning": "2) no normal prior on mirror pixels only (StableNormal elsewhere), same as envgs_b300_nmask",
+   "exp_name": "envgs/mirror_b/envgs_b300_nmask_shared",
+   "exp_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nmask_shared.exp.yaml",
+   "resolved_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nmask_shared.resolved.yaml",
+   "data_root": "data/datasets/mirror_b/b300_nmask (GT mirror pixels persp/masks == 3 stored black in normals/)",
+   "changes_vs_gtnorm_shared": {
+    "data_root": "b300_nmask instead of b300_gtnorm",
+    "supervisor_cfg.norm_ignore_zero": "true (black prior pixels skipped in the normal loss)"
+   },
+   "gpu": "GPU1 RTX 3090",
+   "command": "CUDA_VISIBLE_DEVICES=1 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_nmask_shared.yaml exp_name=envgs/mirror_b/envgs_b300_nmask_shared",
+   "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_nmask_shared_train.log"
   }
+ },
+ "resolved_config_diff_check": "diff vs envgs_b300_gtnorm_shared resolved config (after renaming exp_name) shows only the data_root / preload paths and the one supervisor line listed above",
+ "common_settings": "60000 iters (120 x 500), perc_loss_start_iter 45000, render_reflection_start_iter 3000, val = every 8th frame (38 views), GT poses, conda env envgs (torch 2.3.1+cu118)",
+ "reference_results_val38": {
+  "gtnorm_shared": {
+   "psnr": 36.56,
+   "psnr_mirror": 28.83,
+   "psnr_opaque": 39.54,
+   "mirror_depth_on_plane_frac": 0.999,
+   "mirror_depth_mae_m": 0.004,
+   "specular_weight_mirror": 0.664
+  },
+  "gtnorm (env GS)": {
+   "psnr": 36.15,
+   "psnr_mirror": 26.72,
+   "psnr_opaque": 40.75,
+   "mirror_depth_on_plane_frac": 1.0,
+   "mirror_depth_mae_m": 0.005,
+   "specular_weight_mirror": 0.311
+  },
+  "b300 (env GS, StableNormal)": {
+   "psnr": 34.71,
+   "psnr_mirror": 25.94,
+   "psnr_opaque": 39.89,
+   "mirror_depth_on_plane_frac": 0.919,
+   "mirror_depth_mae_m": 0.068,
+   "specular_weight_mirror": 0.253
+  },
+  "nmask (env GS)": {
+   "psnr": 35.16,
+   "psnr_mirror": 25.0,
+   "psnr_opaque": 41.22,
+   "mirror_depth_on_plane_frac": 0.905,
+   "mirror_depth_mae_m": 0.052,
+   "specular_weight_mirror": 0.337
+  }
+ },
+ "evaluation_plan": "eval_mirror_b_run.sh <tag> dataset_b300 <gpu>; tools/per_obj_mirror_b.py; frame 88 crop vs GT; additionally mirror flatness: spread of rendered mirror depth around the GT plane (user noted the mirror is not perfectly flat)",
+ "results": {
+  "eval": "eval_mirror_b_run.sh <run> dataset_b300 1; per_obj_mirror_b.py; mirror_flatness_b.py (signed depth err on eroded GT mirror px); mirror_normal_spread_b.py (angle to per-frame median rendered normal on mirror px)",
+  "nmask_shared": {
+   "val38": {
+    "psnr": 32.77,
+    "ssim": 0.9343,
+    "lpips": 0.1358,
+    "psnr_opaque": 41.0,
+    "psnr_mirror": 21.45,
+    "mirror_depth_on_plane_frac": 0.514,
+    "mirror_depth_mae_m": 0.097,
+    "opaque_depth_mae_m": 0.266,
+    "specular_weight_mirror": 0.059,
+    "specular_weight_other": 0.008,
+    "mirrorback_psnr": 30.67,
+    "ceiling_depth_mae_m": 0.819,
+    "mirror_signed_offset_m": -0.08,
+    "mirror_depth_std_m": 0.083,
+    "mirror_depth_iqr_m": 0.112,
+    "mirror_normal_spread_median_deg": 11.09,
+    "mirror_normal_spread_p90_deg": 26.66
+   },
+   "summary": "Failed: without a normal prior on the mirror, shared reflection switches off (specular weight 0.06) and the mirror is painted as a texture with geometry pulled ~8 cm in front of the plane and wavy (normal spread 11 deg). Mirror PSNR 21.45, worst of all runs; opaque PSNR highest (41.0)."
+  },
+  "flatness_all_runs_val24_mirror_frames": {
+   "columns": "signed_offset_m, depth_std_m, depth_iqr_m, normal_spread_median_deg, normal_spread_p90_deg",
+   "b300": [
+    0.007,
+    0.132,
+    0.012,
+    2.31,
+    4.23
+   ],
+   "b300_nmask": [
+    -0.038,
+    0.035,
+    0.048,
+    6.25,
+    13.41
+   ],
+   "b300_gtnorm": [
+    0.002,
+    0.004,
+    0.006,
+    0.96,
+    1.56
+   ],
+   "b300_gtnorm_shared": [
+    -0.001,
+    0.003,
+    0.002,
+    0.0,
+    0.58
+   ],
+   "b300_nmask_shared": [
+    -0.08,
+    0.083,
+    0.112,
+    11.09,
+    26.66
+   ],
+   "b300_shared": [
+    0.026,
+    0.199,
+    0.036,
+    0.4,
+    87.3
+   ]
+  },
+  "stablenormal_shared": {
+   "val38": {
+    "psnr": 34.85,
+    "ssim": 0.947,
+    "lpips": 0.0778,
+    "psnr_opaque": 39.81,
+    "psnr_mirror": 26.47,
+    "mirror_depth_on_plane_frac": 0.838,
+    "mirror_depth_mae_m": 0.133,
+    "mirror_depth_median_m": 0.03,
+    "opaque_depth_mae_m": 0.281,
+    "specular_weight_mirror": 0.537,
+    "specular_weight_other": 0.009,
+    "mirrorback_psnr": 24.84,
+    "ceiling_depth_mae_m": 0.777,
+    "mirror_signed_offset_m": 0.026,
+    "mirror_depth_std_m": 0.199,
+    "mirror_depth_iqr_m": 0.036,
+    "mirror_normal_spread_median_deg": 0.4,
+    "mirror_normal_spread_p90_deg": 87.3,
+    "mirror_normal_frac_gt5deg": 0.17
+   },
+   "summary": "Shared reflection with the plain StableNormal prior: most of the mirror is a clean plane (normal spread median 0.4 deg) but ~17% of mirror pixels have normals ~90 deg off (where StableNormal sees the reflected floor/ceiling/side walls), so plane fraction drops 0.919 -> 0.838 vs the env-GS baseline. Mirror PSNR 25.94 -> 26.47, specular weight 0.25 -> 0.54, LPIPS 0.0778. Far below gtnorm_shared (28.83, plane 0.999)."
+  },
+  "conclusion": "With one shared set of Gaussians the mirror normal prior matters more than with env Gaussians: GT normal -> best of all runs (mirror 28.83); StableNormal -> 26.47 with ~17% of the mirror tilted to the wrong (reflected-surface) normal; no prior on the mirror -> collapse (reflection switched off, mirror painted as texture, 21.45). Motivates a geometry cue independent of the reflected content (LiDAR mirror-surface echoes)."
+ },
+ "aborted_runs": {
+  "nonorm_shared": {
+   "meaning": "1) no monocular normal prior at all",
+   "exp_name": "envgs/mirror_b/envgs_b300_nonorm_shared",
+   "exp_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nonorm_shared.exp.yaml",
+   "resolved_config_copy": "2026-10-18_mirror_b_shared_normal_ablation.nonorm_shared.resolved.yaml",
+   "data_root": "data/datasets/mirror_b/b300 (StableNormal normals still loaded by the dataset, not used by any loss)",
+   "changes_vs_gtnorm_shared": {
+    "data_root": "b300 instead of b300_gtnorm (images/poses/sparse are the same files via symlink; envs/points3D.ply is a byte copy)",
+    "supervisor_cfg.norm_loss_weight": "0.0 instead of 0.01"
+   },
+   "kept": "gs_norm_loss_weight 0.04 (prior-free consistency between rendered normal and depth-derived normal), all other losses and schedule",
+   "gpu": "GPU0 RTX 3090",
+   "command": "CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 evc-train -c configs/exps/envgs/mirror_b/envgs_b300_nonorm_shared.yaml exp_name=envgs/mirror_b/envgs_b300_nonorm_shared",
+   "log": "~/SMBC/EnvGS/EnvGS/data/logs/envgs_mirror_b_b300_nonorm_shared_train.log",
+   "status": "ABORTED 2026-10-18 ~15:00 after ~7 min (misunderstanding: user meant StableNormal, not no prior). Not evaluated. Config copies renamed ABORTED_*; partial outputs under data/*/envgs/mirror_b/envgs_b300_nonorm_shared left in place.",
+   "note_2026-10-19": "The 2026-10-18 kill only stopped the wrapper shell; the python trainer kept running on GPU0 (sharing with stablenormal_shared). Found and killed 2026-10-19 ~11:12 at epoch 99/120; checkpoints / intermediate result dir kept, not evaluated."
+  }
+ }
 }

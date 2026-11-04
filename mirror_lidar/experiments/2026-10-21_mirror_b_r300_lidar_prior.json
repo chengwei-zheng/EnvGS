@@ -1,0 +1,15 @@
+{
+  "id": "2026-10-21_mirror_b_r300_lidar_prior",
+  "status": "finished",
+  "question": "Can a mirror normal prior synthesized from multi-echo LiDAR (no labels, no GT) replace the GT mirror normal (gtnorm) on r300? Does first-echo LiDAR depth help on top?",
+  "data": "normals data/datasets/mirror_b/r300_lidarnorm_open3 (mirror_lidar/tools/lidar_mirror_normals.py, 3x3 zone opening + see-through test; mirror normal err 0.016 deg, precision 99.95%, recall 96.9%, IoU 0.987); depth data/datasets/mirror_b/r300_lidar_depth (lidar_first_echo_depth.py, ~39k px/camera = 3.1%, median |err| 1.61 cm)",
+  "runs": {"lidarnorm": "envgs_r300_lidarnorm (GPU0): nw5 settings + norm_ignore_zero", "lidarnorm_ldepth": "envgs_r300_lidarnorm_ldepth (GPU3): + LidarDepthSupervisor L1 weight 0.1"},
+  "eval": "data/logs/eval_r300_lidar.sh <run> <gpu> (eval_mirror_b_run.sh + flatness/normal_spread/per_obj), val 38 frames (26 with mirror)",
+  "results": {
+    "r300_gtnorm":           {"psnr": 34.90, "psnr_opaque": 40.70, "psnr_mirror": 25.23, "opaque_depth_med_m": 0.061, "opaque_d1.05": 0.578, "mirror_on_plane": 0.999, "mirror_depth_std_m": 0.008, "mirror_normal_spread_med_deg": 2.33, "ceiling_depth_med_m": 0.293, "wall_depth_med_m": 0.055},
+    "r300_gtnorm_nw5":       {"psnr": 35.84, "psnr_opaque": 40.67, "psnr_mirror": 26.91, "opaque_depth_med_m": 0.061, "opaque_d1.05": 0.674, "mirror_on_plane": 0.999, "mirror_depth_std_m": 0.004, "mirror_normal_spread_med_deg": 0.49, "ceiling_depth_med_m": 0.373, "wall_depth_med_m": 0.058},
+    "r300_lidarnorm":        {"psnr": 35.92, "psnr_opaque": 40.94, "psnr_mirror": 26.97, "opaque_depth_med_m": 0.037, "opaque_d1.05": 0.667, "mirror_on_plane": 1.000, "mirror_depth_std_m": 0.004, "mirror_normal_spread_med_deg": 0.60, "ceiling_depth_med_m": 0.349, "wall_depth_med_m": 0.033},
+    "r300_lidarnorm_ldepth": {"psnr": 35.89, "psnr_opaque": 40.26, "psnr_mirror": 27.20, "opaque_depth_med_m": 0.003, "opaque_d1.05": 0.990, "mirror_on_plane": 1.000, "mirror_depth_std_m": 0.002, "mirror_normal_spread_med_deg": 0.61, "ceiling_depth_med_m": 0.003, "wall_depth_med_m": 0.004}
+  },
+  "conclusion": "LiDAR-synthesized mirror normals match gtnorm_nw5 on every metric (mirror on plane 100%, depth std 4 mm, normal spread 0.60 vs 0.49 deg, PSNR 35.92 vs 35.84): the GT mirror normal can be replaced by the LiDAR fit. First-echo LiDAR depth (3% px, L1 0.1) fixes the remaining opaque geometry: opaque depth median 6.1 cm -> 0.3 cm, d<1.05 0.67 -> 0.99, ceiling 0.35 m -> 3 mm (the long-standing ceiling error), mirror std 2 mm, mirror PSNR +0.2, opaque PSNR -0.7 dB, total PSNR unchanged. Caveats: synthetic LiDAR has same-index frame/camera sync, exact extrinsics, mirror surface scatter 0.02."
+}

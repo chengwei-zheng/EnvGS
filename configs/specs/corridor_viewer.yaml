@@ -1,0 +1,15 @@
+# evc-gui defaults for the synthetic corridor convex-mirror scene c480 (GT poses, Blender world: metres, Z up).
+# See mirror_b_viewer.yaml for why R/T, focal_ratio and imbound_crop are set.
+viewer_cfg:
+    window_size: [729, 972]
+    camera_cfg:
+        world_up: [0.0, 0.0, 1.0]
+        # initial view = training camera 0360 (largest mirror coverage, 24% of the image)
+        R: [[0.8615542921, -0.5076654427, 0.0], [0.2489680688, 0.4225213896, -0.8714875651], [0.4424241205, 0.7508338522, 0.4904176016]]
+        T: [[0.0019994375], [0.6641617468], [-1.6192824757]]
+        origin: [0.656, 1.744, 1.998] # pivot for left-drag orbiting: apex of the convex mirror
+        movement_force: 5.0
+val_dataloader_cfg:
+    dataset_cfg:
+        focal_ratio: 0.375
+        imbound_crop: False

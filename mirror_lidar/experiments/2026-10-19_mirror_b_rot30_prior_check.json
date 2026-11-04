@@ -1,0 +1,17 @@
+{
+  "id": "2026-10-19_mirror_b_rot30_prior_check",
+  "status": "finished",
+  "question": "Scene B: baseline (StableNormal on mirror) beat nmask. Is that because the mirror is parallel to the +x wall it reflects (StableNormal <15 deg on 65% of mirror px)? Also: does larger camera height variation fix ceiling depth?",
+  "data": "blender proj_indoor_mirror_b_rot30/dataset_r300 (mirror rotated 30 deg about vertical axis, furniture moved in front of mirror, camera height x3.5: 0.71-2.27 m above floor); EnvGS data/datasets/mirror_b/r300{,_nmask,_gtnorm}",
+  "runs": {"baseline": "envgs_r300 (GPU1)", "nmask": "envgs_r300_nmask (GPU3)", "gtnorm": "envgs_r300_gtnorm (GPU0)"},
+  "prior_check": "StableNormal vs GT mirror normal on mirror px: median 45.4 deg, <15 deg 2% (scene B: 9.0 deg, 65%), >60 deg 30% (B 32%)",
+  "eval": "eval_mirror_b_run.sh with B=proj_indoor_mirror_b_rot30, val 38 frames (26 with mirror); per_obj/flatness/normal_spread with GT_PERSP=.../dataset_r300/persp",
+  "results": {
+    "r300":        {"psnr": 31.30, "psnr_opaque": 33.44, "psnr_mirror": 26.31, "mirror_on_plane": 0.065, "mirror_reflected_layer": 0.361, "mirror_depth_offset_m": 1.739, "mirror_normal_spread_med_deg": 29.9, "ceiling_depth_med_m": 0.408},
+    "r300_nmask":  {"psnr": 31.46, "psnr_opaque": 33.98, "psnr_mirror": 26.33, "mirror_on_plane": 0.081, "mirror_reflected_layer": 0.369, "mirror_depth_offset_m": 1.697, "mirror_normal_spread_med_deg": 39.1, "ceiling_depth_med_m": 0.354},
+    "r300_gtnorm": {"psnr": 34.90, "psnr_opaque": 40.70, "psnr_mirror": 25.23, "mirror_on_plane": 0.999, "mirror_reflected_layer": 0.000, "mirror_depth_offset_m": 0.007, "mirror_normal_spread_med_deg": 2.3, "ceiling_depth_med_m": 0.293},
+    "scene_B_reference_ceiling_depth_med_m": {"b300": 0.671, "b300_nmask": 0.746, "b300_gtnorm": 0.633},
+    "scene_B_reference_mirror_on_plane": {"b300": 0.919, "b300_nmask": 0.905, "b300_gtnorm": 1.000}
+  },
+  "conclusion": "Baseline no longer beats nmask: both turn the mirror into a virtual room (6.5% / 8.1% of mirror px on the plane, depth ~1.7 m behind), vs ~91% on plane in scene B. So B's baseline advantage was the parallel-wall coincidence. But nmask also collapses here (it did not in B), so B was easy even without a mirror prior; with the mirror at 30 deg and more objects in front, pure RGB prefers the virtual-room explanation. Only gtnorm gets the mirror (99.9%), and it also improves opaque PSNR by ~7 dB (the virtual room no longer competes with real geometry). Ceiling depth improves vs B (median error 0.67-0.75 -> 0.29-0.41 m) but >10 cm still on ~92% of ceiling px; confounded with the scene change. Motivates a prior-free mirror constraint (LiDAR mirror surface returns)."
+}

@@ -1,0 +1,37 @@
+configs:
+    - configs/base.yaml # default arguments for the whole codebase
+    - configs/models/envgs.yaml # envgs model configuration
+    - configs/datasets/mirror_b/r300lp_lidarnorm.yaml # dataset usage configuration
+
+# 2026-10-22: envgs_r300lp_lidarnorm_shared, tracing reflections only on pixels with rendered beta > 0.02 (non-mirror
+# beta ~0.004, mirror ~0.6 in envgs_r300_lidarnorm_shared_betalog), but every pixel during the first 1500 iterations
+# after reflections start (3000) and after each beta reset (6k..18k, every 3000): beta needs ~1000 iterations to recover.
+# 2026-10-23: + LiDAR first-echo depth (nearest echo of every zone by range, no echo types; lidar_first_echo_depth.py ->
+# r300lp_lidar_depth), L1 on the rendered z-depth at those pixels, weight 0.1 from iteration 0 (as envgs_r300_lidarnorm_ldepth_shared).
+# 2026-10-27: as envgs_r300lp_lidarnorm_ldepth_shared_bfilt (LiDAR depth 0.1), but no LiDAR depth samples on the mirror (LiDAR mirror
+# mask interior + band dropped, lidar_plane_depth.py --drop_mirror): geometry from LiDAR everywhere else, mirror as in bfilt.
+model_cfg:
+    sampler_cfg:
+        shared_reflection: True # reflections trace the base Gaussians (SH DC colour), env Gaussians unused
+        specular_filtering_start_iter: 4500
+        specular_filtering_threshold: 0.02
+        specular_filtering_pause_iter: 1500
+    supervisor_cfg:
+        supervisor_cfgs:
+            - type: VolumetricVideoSupervisor
+            - type: EnvGSSupervisor
+            - type: MirrorRegionSupervisor
+            - type: LidarDepthSupervisor
+        lidar_depth_dir: data/datasets/mirror_b/r300lp_lidar_depth_nomirror # no samples on the mirror (interior + band)
+        lidar_dpt_loss_weight: 0.1
+        mirror_mask_dir: data/datasets/mirror_b/r300lp_lidarnorm/mirror_masks
+        log_mirror_stats: True # logging only: beta / reflection share / c_ref on the mirror, beta elsewhere, traced pixel fraction
+        norm_loss_weight: 0.05
+        norm_ignore_zero: True
+        perc_loss_start_iter: 45000 # less iterations for faster training
+
+runner_cfg:
+    epochs: 120
+
+# prettier-ignore
+exp_name: {{fileBasenameNoExtension}}

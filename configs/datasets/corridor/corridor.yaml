@@ -1,0 +1,15 @@
+# Synthetic Blender scene: L corridor (2.4 m wide, 2.8 m high, two 8 m arms) with a convex safety mirror (sphere R 1.0 m,
+# 1.2 m wide, orange frame) at the outer corner; 2592x1944 renders, GT poses -> COLMAP model with fixed poses, points
+# triangulated from RGB only. ~/SMBC/blender/project/proj_indoor_corridor_convex (build_corridor_L.py), 2026-10-28.
+dataloader_cfg:
+    dataset_cfg: &dataset_cfg
+        ratio: 0.5 # 1296x972, same as scene B
+
+val_dataloader_cfg:
+    dataset_cfg:
+        <<: *dataset_cfg
+
+model_cfg:
+    sampler_cfg:
+        bounds: [[-20.0, -20.0, -20.0], [20.0, 20.0, 20.0]]
+        env_bounds: [[-20.0, -20.0, -20.0], [20.0, 20.0, 20.0]]

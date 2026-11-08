@@ -40,9 +40,9 @@ GT 球面：
 | `datasets/mirror_b/r300lp_lidarnorm_linit/` | LiDAR 点云初始化 | |
 | `datasets/mirror_b/r300lp_lidar_depth_{mplane,nomirror}/` | 镜面 LiDAR 样本换成拟合平面深度 / 去掉 | |
 | `datasets/envgs/`、`refnerf/`、`mmw421_samsung/` | 官方数据（audi 复现过）/ 没用 | |
-| `trained_model/envgs/<组>/envgs_<run>/` | checkpoint（`latest.pt`） | 93 G |
+| `trained_model/envgs/<组>/envgs_<run>/` | checkpoint（`latest.pt`） | 70 G |
 | `record/envgs/<组>/envgs_<run>/` | tensorboard + 解析后的配置 | 3.5 G |
-| `result/envgs/<组>/envgs_<run>/` | 训练结束时的测试渲染、`metrics.json`；评估后多出 `rawdepth/`、`eval_npz/`、`eval_gt/`（`summary_val.json`） | 165 G |
+| `result/envgs/<组>/envgs_<run>/` | 训练结束时的测试渲染、`metrics.json`；评估后多出 `rawdepth/`、`eval_npz/`、`eval_gt/`（`summary_val.json`） | 87 G |
 | `result/envgs/<组>/envgs_<run>_<tag>/` | 推理对照（oracle / fitted / off / prune 等），原模型不动 | |
 | `vis/` | 早期 r300 / r300lp 的对比图、点云可视化 | 111 M |
 
@@ -71,6 +71,10 @@ GT 球面：
 | `corridor/mirror_lr_c2_480_scons_20261106/` | 一致约束各组：`bins_*`、`depth_*`、`depth_extent*`（按范围内外分）、`mask_lr.txt`（掩码按位置的召回） |
 | `corridor/prep_check_c2_480_20261107/` | 预处理检查视频（`vis_mirror_prep.py`）：曲面初始化投影（原范围 / 外扩 4 cm）、LiDAR 掩码 + GT 轮廓、oracle 掩码 |
 | `corridor/spline_normal_c2_480_20261106/`、`_scons_20261107/` | 学到的 B 样条对 GT 球面的法线误差（`summary.txt`、`normal_err_0to5deg.png`、`extent_vs_gt.png`） |
+
+**11-08 清理磁盘**（清单 `data/logs/cleanup_candidates_20261108.txt`）：
+- 删了所有 `rawdepth*` / `rawspec`（`export_raw.py` 的中间产物，已经转成 `eval_npz`；重跑 `eval_*.sh` 会重新生成）。
+- 删了修灯 bug 之前所有场景的 result 和 checkpoint：bathroom、mirror_a、mirror_b 的 b300 / m300 / r300（不含 r300lp）。这些实验的结论只在本文档和 archive 里，不能再开 viewer 或重新评估。
 
 ## 2. 主要结论（按时间）
 

@@ -4,7 +4,7 @@ configs:
     - configs/datasets/mirror_b/r300_lidarnorm.yaml # dataset usage configuration
 
 # envgs_r300_gtnorm_nw5 with the GT mirror normal replaced by the normal of a plane fitted to the multi-echo LiDAR
-# (mirror_lidar/LIDAR_MIRROR_NORMAL.md); the mirror boundary band is stored black and skipped (norm_ignore_zero).
+# (mirror_lidar/doc/MIRROR_SURFACE.md); the mirror boundary band is stored black and skipped (norm_ignore_zero).
 # _shared (2026-10-21): envgs_r300_lidarnorm with shared_reflection on, cf. envgs_b300_gtnorm_shared.
 model_cfg:
     sampler_cfg:

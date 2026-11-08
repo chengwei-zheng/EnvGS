@@ -1,4 +1,4 @@
-"""Initial point cloud for the base surfels from the LiDAR first echoes (2026-10-23, mirror_lidar/NEXT_STEPS.md #3).
+"""Initial point cloud for the base surfels from the LiDAR first echoes (2026-10-23, mirror_lidar/doc/archive/EXPERIMENT_LOG_20261022-20261105.md, item 3).
 
 Replaces the COLMAP triangulation (sparse/0/points3D.ply), which on r300 has 8.7% mirror-virtual points (triangulated
 through the mirror). For every TRAINING camera k (val = every 8th, as the dataset split), the nearest-by-range echo of

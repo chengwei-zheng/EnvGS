@@ -6,7 +6,7 @@ configs:
 # 2026-10-22: envgs_r300lp_lidarnorm_shared, tracing reflections only on pixels with rendered beta > 0.02 (non-mirror
 # beta ~0.004, mirror ~0.6 in envgs_r300_lidarnorm_shared_betalog), but every pixel during the first 1500 iterations
 # after reflections start (3000) and after each beta reset (6k..18k, every 3000): beta needs ~1000 iterations to recover.
-# _linit (2026-10-23): base surfels initialised from the LiDAR first echoes instead of the COLMAP triangulation (NEXT_STEPS #3;
+# _linit (2026-10-23): base surfels initialised from the LiDAR first echoes instead of the COLMAP triangulation (mirror_lidar/doc/archive/EXPERIMENT_LOG_20261022-20261105.md #3;
 # COLMAP has 8.25% mirror-virtual points, LiDAR 0.14%); colour from the training images, rotation still random.
 model_cfg:
     sampler_cfg:

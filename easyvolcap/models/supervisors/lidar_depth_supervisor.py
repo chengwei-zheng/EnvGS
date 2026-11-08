@@ -1,4 +1,4 @@
-# Sparse LiDAR depth supervision (2026-10-20, mirror_lidar/LIDAR_MIRROR_NORMAL.md).
+# Sparse LiDAR depth supervision (2026-10-20, mirror_lidar/doc/MIRROR_SURFACE.md).
 # Per camera, <lidar_depth_dir>/<camera name>.npz holds the LiDAR samples projected into that camera at the training
 # resolution: idx (flat pixel index, int64), z (camera z-depth, float32), H, W
 # (written by mirror_lidar/tools/lidar_first_echo_depth.py). Loss: L1 between the rendered depth and z at those pixels.

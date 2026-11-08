@@ -1,4 +1,4 @@
-"""LiDAR-derived mirror normal prior ("LiDAR gtnorm", 2026-10-20, plan: mirror_lidar/LIDAR_MIRROR_NORMAL.md).
+"""LiDAR-derived mirror normal prior ("LiDAR gtnorm", 2026-10-20, plan: mirror_lidar/doc/MIRROR_SURFACE.md).
 
 Builds <data_root>_lidarnorm/normals: StableNormal everywhere, except on mirror pixels found from the multi-echo LiDAR,
 which get the normal of a surface fitted to the nearest LiDAR echoes; a band around the mirror boundary is stored black

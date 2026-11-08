@@ -7,7 +7,7 @@ configs:
 # beta ~0.004, mirror ~0.6 in envgs_r300_lidarnorm_shared_betalog), but every pixel during the first 1500 iterations
 # after reflections start (3000) and after each beta reset (6k..18k, every 3000): beta needs ~1000 iterations to recover.
 # 2026-10-23: + LiDAR first-echo depth as envgs_r300lp_lidarnorm_ldepth_shared_bfilt, weight 0.1 until 21000 then 0.02
-# (NEXT_STEPS #4 ldecay: the LiDAR loss reaches the ~2.4 cm noise floor early; later it fits noise and costs opaque RGB).
+# (mirror_lidar/doc/archive/EXPERIMENT_LOG_20261022-20261105.md #4 ldecay: the LiDAR loss reaches the ~2.4 cm noise floor early; later it fits noise and costs opaque RGB).
 model_cfg:
     sampler_cfg:
         shared_reflection: True # reflections trace the base Gaussians (SH DC colour), env Gaussians unused

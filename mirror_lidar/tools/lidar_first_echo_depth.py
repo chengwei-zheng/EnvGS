@@ -1,4 +1,4 @@
-"""Sparse first-echo LiDAR depth per camera, for LidarDepthSupervisor (2026-10-20, mirror_lidar/LIDAR_MIRROR_NORMAL.md).
+"""Sparse first-echo LiDAR depth per camera, for LidarDepthSupervisor (2026-10-20, mirror_lidar/doc/MIRROR_SURFACE.md).
 
 For every camera, the nearest (first, by RANGE) echo of every zone of the same-index LiDAR frame
 (th_s02_format/extracted/pointclouds_multiecho, ranges + xyz only, no echo types) is moved to world coordinates with the

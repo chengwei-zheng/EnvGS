@@ -1,4 +1,4 @@
-"""Per-camera mirror masks from a LiDAR normal-prior dataset (2026-10-21, mirror_lidar/LIDAR_MIRROR_NORMAL.md).
+"""Per-camera mirror masks from a LiDAR normal-prior dataset (2026-10-21, mirror_lidar/doc/MIRROR_SURFACE.md).
 
 lidar_mirror_normals.py writes the fitted mirror normal inside the mirror, black (0,0,0) on the eroded boundary band
 and leaves the StableNormal prior everywhere else. So the mirror region is recovered exactly by comparing with the

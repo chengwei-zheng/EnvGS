@@ -1,4 +1,4 @@
-# Explicit mirror surface for the reflection normal (2026-11-02, mirror_lidar/LIDAR_MIRROR_NORMAL.md "可学镜面曲面").
+# Explicit mirror surface for the reflection normal (2026-11-02, mirror_lidar/doc/MIRROR_SURFACE.md "可学镜面曲面").
 #
 # EnvGS reflects every traced pixel about the rendered 2DGS normal. On a curved mirror the surfels only reach 1.4-1.8 deg
 # (p90 4-5 deg) even with the LiDAR normal prior, and the convex reflection is very sensitive to it (cv300: replacing the
@@ -30,7 +30,7 @@ class MirrorSurface(nn.Module):
 
     def __init__(self, fit: str, learnable: bool = False, learn_start_iter: int = 4500, tol: float = 0.15,
                  anchor_weight: float = 0.0, anchor_sigma: float = 0.002, anchor_huber: float = 3.0,
-                 eval_sphere: list = None, **kwargs):
+                 eval_sphere: list = None, extent_dilate: float = 0.0, **kwargs):
         super().__init__()
         a = np.load(fit)
         self.fit = fit
@@ -41,7 +41,12 @@ class MirrorSurface(nn.Module):
         self.register_buffer('R', f32(a['R']), persistent=False)
         self.register_buffer('g0', f32(a['g0']), persistent=False)
         self.cell = float(a['cell'])
-        self.register_buffer('extent', torch.as_tensor(a['extent'].astype(bool)), persistent=False)
+        ext = a['extent'].astype(bool)
+        if extent_dilate > 0:  # 2026-11-06, c2_480: the LiDAR extent misses a 1-5.5 cm strip along the least-seen rim (and the top cap)
+            from scipy import ndimage
+            n0 = ext.sum(); ext = ndimage.binary_dilation(ext, iterations=int(round(extent_dilate / float(a['cell']))))
+            log(f'extent dilated by {extent_dilate * 100:.0f} cm: {n0} -> {ext.sum()} cells')
+        self.register_buffer('extent', torch.as_tensor(ext), persistent=False)
         use = (a['cells_rim_dist'] >= float(a['rim_drop'])) & (a['cells_w'] >= 0.25 * np.median(a['cells_w']))
         self.register_buffer('anchor_x', f32((a['cells'][use] - a['c']) @ a['R']), persistent=False)  # patch frame
         self.register_buffer('anchor_w', f32(a['cells_w'][use] / a['cells_w'][use].mean()), persistent=False)
@@ -85,11 +90,15 @@ class MirrorSurface(nn.Module):
             dl = ray_d @ self.R
             t, ok = self.intersect_local(ol, dl)
             x = ol + t[..., None] * dl
-            ok = ok & (t > 0) & self.inside(x) & ((t[..., None] - dpt).abs()[..., 0] < self.tol)
+            hit = ok & (t > 0) & self.inside(x)
+            ok = hit & ((t[..., None] - dpt).abs()[..., 0] < self.tol)
         with torch.set_grad_enabled(torch.is_grad_enabled() and not self.frozen()):
             n = F.normalize(self.normal_local(x) @ self.R.T, dim=-1)
         n = torch.where((n * ray_d).sum(-1, keepdim=True) > 0, -n, n)
         if self.frozen(): n = n.detach()
+        # 2026-11-06: surface targets for the Gaussian-to-surface consistency losses (MirrorRegionSupervisor msurf_dpt / msurf_norm):
+        # hit without the depth gate (the Gaussians that are off by > tol are the ones to pull back), all detached
+        self.targets = dotdict(t=t[..., None], hit=hit[..., None], n=n.detach())
         return n, ok[..., None]
 
     def losses(self):

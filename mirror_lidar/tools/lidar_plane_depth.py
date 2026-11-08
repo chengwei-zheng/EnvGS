@@ -1,4 +1,4 @@
-"""LiDAR depth with the fitted mirror plane on the mirror (2026-10-26, NEXT_STEPS 10-26).
+"""LiDAR depth with the fitted mirror plane on the mirror (2026-10-26, mirror_lidar/doc/archive/EXPERIMENT_LOG_20261022-20261105.md 10-26).
 
 The first-echo LiDAR depth (lidar_first_echo_depth.py) carries the range noise (synthetic sigma ~2.4 cm). Supervising the
 rendered depth with it pulls surfels on the mirror off the plane (bumps 0.5-5 cm in front of the mirror). Here the samples

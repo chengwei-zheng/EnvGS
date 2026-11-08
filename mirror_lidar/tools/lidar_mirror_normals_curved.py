@@ -105,8 +105,14 @@ def fit_quadric(X, w, iters=8, k=4.0):
     return q / np.linalg.norm(q), sg, ww
 
 
-def quadric_height(q, u, v, z0):
-    """height z(u, v) on the implicit quadric (root closest to the guess z0) and the slopes dz/du, dz/dv."""
+def quadric_height(q, u, v, z0, branch_mask=None, par_tol=None):
+    """height z(u, v) on the implicit quadric (root closest to the guess z0) and the slopes dz/du, dz/dv.
+    branch_mask (2026-11-04): pick ONE root branch for all samples (the one closest to z0 in median over branch_mask) instead of
+    per sample. A flat mirror makes the algebraic fit degenerate into two parallel planes (f300: z^2 - 8e-5 z - 1e-5 = 0, 3.6 mm
+    apart); the per-sample choice jumped between them (3.6 mm steps in Hh -> 4-12 deg slopes in the B-spline init of mirror_surface.py,
+    dead-beta patches in envgs_f300_msurf_spline_learn_ldepth005_dz5). par_tol: if the two branches stay within par_tol of each
+    other over branch_mask (parallel sheets), use their mid-surface z = -b / 2a (the implicit gradient vanishes there, so its slopes
+    are the derivatives of -b / 2a)."""
     a = q[2] * np.ones_like(u)
     b = q[4] * u + q[5] * v + q[8]
     c = q[0] * u * u + q[1] * v * v + q[3] * u * v + q[6] * u + q[7] * v + q[9]
@@ -116,7 +122,16 @@ def quadric_height(q, u, v, z0):
         lin = np.abs(a) < 1e-9 * (np.abs(b) + 1e-12)
         r1 = np.where(lin, -c / b, (-b + sq) / (2 * a))
         r2 = np.where(lin, -c / b, (-b - sq) / (2 * a))
-    z = np.where(np.abs(r1 - z0) < np.abs(r2 - z0), r1, r2)
+    if branch_mask is None:
+        z = np.where(np.abs(r1 - z0) < np.abs(r2 - z0), r1, r2)
+    else:
+        bm = branch_mask & np.isfinite(r1) & np.isfinite(r2) & (disc >= 0)
+        gap = np.abs(r1 - r2)[bm].max()
+        if par_tol is not None and not lin.any() and gap < par_tol:
+            print(f'quadric_height: degenerate fit, two parallel sheets <= {gap:.4g} apart (fit units) -> mid-surface')
+            z = -b / (2 * a)
+            return z, -q[4] / (2 * a), -q[5] / (2 * a), np.isfinite(z)
+        z = r1 if np.median(np.abs(r1 - z0)[bm]) < np.median(np.abs(r2 - z0)[bm]) else r2
     ok = np.isfinite(z) & ((disc >= 0) | lin)
     X = np.stack([u, v, np.where(ok, z, 0)], 1)
     _, gx, gy, gz = quadric_terms(X)
@@ -394,7 +409,8 @@ def fit_global_quadric(La, wa, g0, H2, W2, big):
     gu, gv = g0[0] + (cx.ravel() + 0.5) * GRID, g0[1] + (cy.ravel() + 0.5) * GRID
     coef, _, _ = fit_height(La)
     z0 = poly4(gu, gv) @ coef
-    z, hu, hv, ok = quadric_height(q, (gu - m[0]) / s, (gv - m[1]) / s, (z0 - m[2]) / s)
+    # one root branch over the extent; two sheets within 2 cm of each other everywhere = degenerate fit (flat mirror) -> mid-surface
+    z, hu, hv, ok = quadric_height(q, (gu - m[0]) / s, (gv - m[1]) / s, (z0 - m[2]) / s, branch_mask=big.ravel(), par_tol=0.02 / s)
     z = z * s + m[2]                                                        # slopes are scale invariant
     Hh, Hu, Hv = np.zeros(H2 * W2), np.zeros(H2 * W2), np.zeros(H2 * W2)
     Hh[ok], Hu[ok], Hv[ok] = z[ok], hu[ok], hv[ok]

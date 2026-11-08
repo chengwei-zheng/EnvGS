@@ -472,6 +472,7 @@ class EnvGSSampler(Gaussian2DSampler):
             n_s, m_s = self.msurf.reflection_normals(ray_o, ray_d, output.dpt_map)
             norm = torch.where(m_s, n_s, norm)
             output.msurf_frac = m_s.float().mean()
+            output.msurf_t, output.msurf_hit, output.msurf_n = self.msurf.targets.t, self.msurf.targets.hit, self.msurf.targets.n
             if self.training:
                 output.msurf_losses = self.msurf.losses()
                 if int(batch.meta.iter) % 100 == 0: output.msurf_stats = self.msurf.stats()

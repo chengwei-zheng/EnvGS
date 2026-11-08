@@ -1,4 +1,4 @@
-# Mirror-region loss reweighting (2026-10-21, mirror_lidar/LIDAR_MIRROR_NORMAL.md).
+# Mirror-region loss reweighting (2026-10-21, mirror_lidar/doc/MIRROR_SURFACE.md).
 # Per camera, <mirror_mask_dir>/<camera name>/000000.png: 255 = mirror interior, 128 = boundary band, 0 = rest
 # (written by mirror_lidar/tools/lidar_mirror_mask.py from the LiDAR normal prior, full image resolution).
 # Implemented as extra terms on top of VolumetricVideoSupervisor / EnvGSSupervisor, with the same per-pixel losses and
@@ -7,11 +7,18 @@
 #   L1 + SSIM:    mirror (interior + band) x mirror_rgb_scale before mirror_rgb_until_iter, x1 afterwards
 #   depth-normal consistency (2026-10-27): mirror interior gs_norm_loss_weight (x depth scale) + mirror_gs_norm_loss_weight
 #   (no depth scale), elsewhere gs_norm_loss_weight: against the small bumps on the mirror in the depth normals, which make
-#   up only 1-2% of the full-image gs_norm loss (NEXT_STEPS 10-27)
+#   up only 1-2% of the full-image gs_norm loss (doc/archive/EXPERIMENT_LOG 10-27)
 #   blending weight beta (2026-10-30): mirror_beta_loss_weight * mean over the mirror interior of relu(mirror_beta_target - beta),
 #   from mirror_beta_start_iter: pulls beta up on the mirror (on the c480 convex mirror beta stayed ~0.02 and the reflection was
-#   baked into the surfel colours, NEXT_STEPS 10-30); normalized by the mirror pixel count, not the image
+#   baked into the surfel colours, doc/archive/EXPERIMENT_LOG 10-30); normalized by the mirror pixel count, not the image
 # msurf_* (2026-11-02): losses / stats of the explicit mirror surface (samplers/mirror_surface.py), summed into the loss.
+# Gaussian-to-surface consistency (2026-11-06, c2_480: on the right side of the mirror a Gaussian layer ~4 cm in front of the
+# explicit surface, beyond the LiDAR dead zone; the learned B-spline is within 0.1 mm / 0.07 deg of the GT sphere): on the mirror
+# interior pixels (m == 255) whose camera ray hits the surface inside its extent (no depth gate), from msurf_cons_start_iter:
+#   msurf_dpt_loss_weight   L1(rendered depth, surface hit t)
+#   msurf_norm_loss_weight  1 - |n_render . n_surface|
+#   msurf_dist_loss_weight  2DGS distortion (dist_map), against two layers averaging onto the surface
+# all mean over all pixels (constant per-pixel weight, as gs_norm / mirror_gs_norm); the surface side is detached (teacher).
 # log_mirror_stats (2026-10-22): logging only, no loss: blending weight beta, reflection share (beta c_ref / RGB) and
 # c_ref on the mirror interior of the training view and beta elsewhere (beta reset study).
 import os
@@ -51,6 +58,10 @@ class MirrorRegionSupervisor(VolumetricVideoSupervisor):
                  mirror_beta_loss_weight: float = 0.0,
                  mirror_beta_target: float = 0.9,
                  mirror_beta_start_iter: int = 3000,
+                 msurf_dpt_loss_weight: float = 0.0,
+                 msurf_norm_loss_weight: float = 0.0,
+                 msurf_dist_loss_weight: float = 0.0,
+                 msurf_cons_start_iter: int = 3000,
                  **kwargs,
                  ):
         call_from_cfg(super().__init__, kwargs, network=network)
@@ -65,8 +76,11 @@ class MirrorRegionSupervisor(VolumetricVideoSupervisor):
         self.log_mirror_stats = log_mirror_stats
         self.mirror_beta_loss_weight, self.mirror_beta_target = mirror_beta_loss_weight, mirror_beta_target
         self.mirror_beta_start_iter = mirror_beta_start_iter
+        self.msurf_dpt_loss_weight, self.msurf_norm_loss_weight = msurf_dpt_loss_weight, msurf_norm_loss_weight
+        self.msurf_dist_loss_weight, self.msurf_cons_start_iter = msurf_dist_loss_weight, msurf_cons_start_iter
+        msurf_cons = msurf_dpt_loss_weight > 0 or msurf_norm_loss_weight > 0 or msurf_dist_loss_weight > 0
         self.masks, self.cache = [], {}
-        if mirror_norm_loss_weight > 0 or mirror_gs_norm_loss_weight > 0 or (mirror_rgb_scale != 1 and mirror_rgb_until_iter > 0) or log_mirror_stats or mirror_beta_loss_weight > 0:
+        if msurf_cons or mirror_norm_loss_weight > 0 or mirror_gs_norm_loss_weight > 0 or (mirror_rgb_scale != 1 and mirror_rgb_until_iter > 0) or log_mirror_stats or mirror_beta_loss_weight > 0:
             names = sorted(os.listdir(mirror_mask_dir))  # camera_index i <-> i-th camera folder (sorted), as in the dataset
             self.masks = [cv2.imread(os.path.join(mirror_mask_dir, n, '000000.png'), cv2.IMREAD_UNCHANGED) for n in names]
             log(f'Mirror masks: {len(names)} cameras from {mirror_mask_dir}, '
@@ -121,6 +135,23 @@ class MirrorRegionSupervisor(VolumetricVideoSupervisor):
             mirror_gs_norm_loss = (gs_norm * w).mean()
             scalar_stats.mirror_gs_norm_loss = mirror_gs_norm_loss
             loss += self.mirror_gs_norm_loss_weight * mirror_gs_norm_loss
+
+        if 'msurf_hit' in output and output.iter >= self.msurf_cons_start_iter and \
+           (self.msurf_dpt_loss_weight > 0 or self.msurf_norm_loss_weight > 0 or self.msurf_dist_loss_weight > 0):
+            w = ((m == 255) & output.msurf_hit[..., 0]).float()  # B, HW
+            scalar_stats.msurf_cons_frac = w.sum() / (m == 255).sum().clamp(min=1)
+            if self.msurf_dpt_loss_weight > 0:
+                msurf_dpt_loss = ((output.dpt_map - output.msurf_t).abs()[..., 0] * w).mean()
+                scalar_stats.msurf_dpt_loss = msurf_dpt_loss
+                loss += self.msurf_dpt_loss_weight * msurf_dpt_loss
+            if self.msurf_norm_loss_weight > 0:
+                msurf_norm_loss = ((1 - (normalize(output.norm_map) * output.msurf_n).sum(-1).abs()) * w).mean()
+                scalar_stats.msurf_norm_loss = msurf_norm_loss
+                loss += self.msurf_norm_loss_weight * msurf_norm_loss
+            if self.msurf_dist_loss_weight > 0 and 'dist_map' in output:
+                msurf_dist_loss = (output.dist_map[..., 0] * w).mean()
+                scalar_stats.msurf_dist_loss = msurf_dist_loss
+                loss += self.msurf_dist_loss_weight * msurf_dist_loss
 
         if self.mirror_beta_loss_weight > 0 and output.iter >= self.mirror_beta_start_iter and 'spec_map' in output:
             w = (m >= 254).float()

@@ -9,6 +9,13 @@
   只在 LiDAR 镜面掩码 255 内、不乘深度缩放、对全部像素取平均）。镜面鼓包 >10° 从 1.5% 降到 0.29%，镜面视觉最好；代价是不透明区
   PSNR −1.8 dB、镜面平面上的面元伸出镜边 0–1.6 cm。权重 1.0（`_mgsn1`）鼓包更少，但镜面伸出镜边 0–5 cm、墙面 −5 dB（NEXT_STEPS 10-27）。
 
+- **2026-11-05 房间场景最终方法（用户确认）：可学 B 样条显式镜面 + LiDAR 第一回波深度**，平面镜
+  `configs/exps/envgs/mirror_b/envgs_f300_msurf_spline_learn_ldepth005_dz5_fitfix.yaml`（镜面 PSNR 38.64，基线 28.56），凸面镜
+  `envgs_cv300_msurf_spline_learn_ldepth005_dz5.yaml`（34.63，基线 24.45）。= f300 默认（`_mgsn05`）+ `sampler_cfg.mirror_surface_cfg`
+  （spline，2 cm 控制点，LiDAR 全局二次曲面拟合初始化，4500 次起可学，lr `msurf_h` 2e-6）+ `LidarDepthSupervisor`（0.05，5 cm 死区）。
+  镜面像素（相机光线打到曲面、在渲染深度 tol 内）的反射法线换成曲面法线，反射起点仍是渲染深度。结论和对照表见 NEXT_STEPS.md 开头；
+  viewer：`mirror_lidar/tools/gui_f300_msurf_best.sh`、`gui_cv300_msurf_best.sh`。
+
 - 代码位置
   - 采样器：`easyvolcap/models/samplers/envgs_sampler.py`（继承 `gaussian2d_sampler.py`）
   - 高斯模型的各种操作：`easyvolcap/utils/gaussian2d_utils.py`

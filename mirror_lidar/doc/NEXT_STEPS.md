@@ -13,8 +13,11 @@
 
 | GPU | run | 问题 | 预计 |
 |---|---|---|---|
-| 3 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4` | A + 曲面范围外扩 4 cm：范围补上后右侧能不能好 | 11-07 约 22:00 训完 |
-| 0 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclemask` | ORACLE：dil4 + GT 镜面掩码。和 dil4 的差值就是掩码在右侧漏掉 26% 的代价 | 11-07 18:11 起，单卡约 15–20 h |
+| 0 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclemask` | ORACLE：dil4 + GT 镜面掩码。和 dil4 的差值就是掩码在右侧漏掉 26% 的代价 | 11-07 18:11 起；11-08 10:20 到 epoch 69/120，预计 11-08 夜里训完 |
+
+**dil4 已训完（11-08 00:17）**：镜面 PSNR 28.71 → 29.00、LPIPS-a 0.129 → 0.126，全图 34.26 → 33.99。
+最右段只 25.3 → 25.8，没补上；最左段 30.6 → 29.1 反而变差（预处理检查视频里看到外扩后左侧范围压到镜框上）；右侧深度偏差 −0.8 → −1.3 cm。
+单靠外扩范围不够，等 oracle 掩码组看掩码的影响。
 
 训完自动跑：`eval_c2_480.sh`、`mirror_lr_bins.py`、`mirror_lr_depth.py`；oracle 组还会跑 `mirror_lr_depth_extent.py`（外扩 4 格）。
 结果写到 `data/result/envgs/corridor/mirror_lr_c2_480_scons_20261106/`。
@@ -59,4 +62,4 @@
   全图或镜面内 2DGS distortion、删镜前面元（prune）。
 
 ### 杂项
-- 11-06 起的代码、配置、工具、文档整理**都还没提交**，用户确认后在本地提交（不 push）。
+- 11-08 已本地提交（3fac242，未 push）。`build_variants/`（START_OFFSET 编译变体）和子模块 diff-surfel-tracing 的 validationMode 改动没提交。

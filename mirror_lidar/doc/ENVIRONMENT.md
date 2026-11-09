@@ -83,7 +83,7 @@ CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 $(cat data/logs/cmd_envgs_corridor_$r.
 
 ## 6. GUI（`evc-gui`）
 
-用 `mirror_lidar/tools/gui_*.sh`，清单见 `RESULTS.md` §6。默认在 GPU2 上开；关窗口时不保存。
+用 `mirror_lidar/tools/gui.sh <run>`（11-09 起；`-l` 列出 run，`-n` 只打印）。它自动找组和 viewer 配置，run 名带 `_off0NN` 时自动用 `build_variants/dst_off0NN` 的光追（和训练一致）；默认 GPU2（`GPU=` 可改），已有 viewer 在开时拒绝再开（`FORCE=1` 强制）。旧的 `gui_*.sh` 清单见 `RESULTS.md` §6。关窗口时不保存。
 - **`exp_name` 必须和训练时一样**，否则会悄悄加载一个没训练的模型。
 - viewer 配置在 `configs/specs/{mirror_a,mirror_b,corridor,corridor_c2,bathroom}_viewer.yaml`：初始相机用一个训练相机的 R/T，`focal_ratio`，`imbound_crop: False`，world_up。
   GUI 模式下验证集被换成 `NoopDataset`，不给这些参数的话，相机会在房间外面，视场也不对。

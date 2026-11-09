@@ -174,6 +174,7 @@ GT 球面：
 
 | 脚本 | 打开 |
 |---|---|
+| **`gui.sh <run>`** | **通用（11-09 起推荐）**：run 写全名或能唯一确定的一段（如 `oracleall_off020`、`oraclenormmask`），自动找组、viewer 配置、反射偏移版本（名字带 `_off020` 就用 2 cm 光追）；`gui.sh -l [关键词]` 列出训练好的 run，`gui.sh -n <run>` 只打印不打开；同时只允许开一个 viewer |
 | `gui_f300_msurf_best.sh` / `gui_cv300_msurf_best.sh` | 房间定稿 |
 | `gui_f300_best.sh` | f300 基线（mgsn05） |
 | `gui_c2_480_msurf_ldepth.sh` | c2_480 B 样条 + LiDAR 深度 |

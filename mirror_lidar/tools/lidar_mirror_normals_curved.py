@@ -303,6 +303,17 @@ class GridPatch(lmn.Patch):
         return self.c + np.stack([u[k], v[k], self.h(u[k], v[k])], 1) @ self.R.T
 
 
+def load_patch(path):
+    """GridPatch from a patch<i>.npz (patch_arrays format; extra keys are ignored)."""
+    f = np.load(path)
+    assert abs(float(f['cell']) - GRID) < 1e-9, float(f['cell'])
+    info = dict(model=str(f['model']), source=os.path.abspath(path))
+    if 'quadric' in f: info.update(quadric=f['quadric'].tolist(), fit_scale=f['fit_scale'].tolist())
+    p = GridPatch(f['c'], f['R'], f['Hh'], f['Hu'], f['Hv'], f['extent'].astype(bool), f['g0'], info)
+    p.cells = (f['cells'], f['cells_rim_dist'], f['cells_w']) if 'cells' in f else None
+    return p
+
+
 def fit_patches(P, F, origins, sigma, min_pts=2000, min_frames=5, min_area=0.05, h=H_MLS, tau=TAU, mode='taubin',
                 surface='mls', rim_drop=RIM_DROP):
     key = np.floor(P / VOX_CLUSTER).astype(np.int64)
@@ -444,6 +455,8 @@ def main():
     ap.add_argument('--rim-drop', type=float, default=RIM_DROP, help='outer ring of the extent left out of the fit (m)')
     ap.add_argument('--fit-only', action='store_true', help='fit + surface eval (+ --export-ply) only, no per-camera output')
     ap.add_argument('--export-ply', default=None, help='directory for the fitted surface mesh / cell means (MeshLab)')
+    ap.add_argument('--patch', nargs='*', default=None,
+                    help='use these patch<i>.npz (e.g. mirror_extent_vote.py output) instead of fitting: no fit / coverage / see-through checks')
     a = ap.parse_args()
     src = os.path.abspath(a.data_root.rstrip('/'))
     out = src + '_' + a.suffix
@@ -470,21 +483,27 @@ def main():
     print(f'candidates: {len(P)} points from {len(np.unique(F))} train frames '
           f'(multi-echo zones {st[:, 0].sum()}, kept after opening/components/smoothness {st[:, 1].sum()}); '
           f'height-field residual MAD (median over components) {100 * sigma:.2f} cm', flush=True)
-    patches = fit_patches(P, F, origins, sigma, h=a.h, tau=a.tau, mode=a.mode, surface=a.surface, rim_drop=a.rim_drop)
-    for i, p in enumerate(patches):
-        print(f'patch {i}:', json.dumps({k: (np.round(v, 4).tolist() if isinstance(v, list) else (round(v, 4) if isinstance(v, float) else v)) for k, v in p.info.items()}), flush=True)
-    D = lmn.zone_dirs(files)
-    patches = [p for p in patches if lmn.coverage_ok(p, files, T, D, train, sigma)]
-    dvox = lmn.direct_voxels(files, T, train[::3])
-    keep = []
-    for p in patches:
-        st_ = lmn.seen_through_ratio(p, files, T, D, train, sigma, dvox)
-        p.info['far_echo_on_direct_surface'] = float(st_)
-        print(f"patch at {np.round(p.c, 2).tolist()}: {st_:.2f} of far echoes land on directly measured surfaces "
-              f"-> {'rejected (see-through)' if st_ > lmn.SEE_THROUGH else 'mirror'}", flush=True)
-        if st_ <= lmn.SEE_THROUGH: keep.append(p)
-    patches = keep
-    assert patches, 'no mirror patch found'
+    if a.patch:
+        patches = [load_patch(f) for f in a.patch]
+        for f, p in zip(a.patch, patches):
+            print(f'patch from {f}: {int(p.grid.sum())} extent cells', flush=True)
+        D = lmn.zone_dirs(files)
+    else:
+        patches = fit_patches(P, F, origins, sigma, h=a.h, tau=a.tau, mode=a.mode, surface=a.surface, rim_drop=a.rim_drop)
+        for i, p in enumerate(patches):
+            print(f'patch {i}:', json.dumps({k: (np.round(v, 4).tolist() if isinstance(v, list) else (round(v, 4) if isinstance(v, float) else v)) for k, v in p.info.items()}), flush=True)
+        D = lmn.zone_dirs(files)
+        patches = [p for p in patches if lmn.coverage_ok(p, files, T, D, train, sigma)]
+        dvox = lmn.direct_voxels(files, T, train[::3])
+        keep = []
+        for p in patches:
+            st_ = lmn.seen_through_ratio(p, files, T, D, train, sigma, dvox)
+            p.info['far_echo_on_direct_surface'] = float(st_)
+            print(f"patch at {np.round(p.c, 2).tolist()}: {st_:.2f} of far echoes land on directly measured surfaces "
+                  f"-> {'rejected (see-through)' if st_ > lmn.SEE_THROUGH else 'mirror'}", flush=True)
+            if st_ <= lmn.SEE_THROUGH: keep.append(p)
+        patches = keep
+        assert patches, 'no mirror patch found'
     spacing = np.radians(120 / 256)
 
     gt_n = sph = None

@@ -13,7 +13,7 @@
 
 | GPU | run | 问题 | 预计 |
 |---|---|---|---|
-| 0 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclemask` | ORACLE：dil4 + GT 镜面掩码。和 dil4 的差值就是掩码在右侧漏掉 26% 的代价 | 11-07 18:11 起；11-08 10:20 到 epoch 69/120，预计 11-08 夜里训完 |
+| 0 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclemask` | ORACLE：dil4 + GT 镜面掩码。和 dil4 的差值就是掩码在右侧漏掉 26% 的代价 | 11-09 03:58 跑完，结果见 RESULTS §5 |
 | 3 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclenormmask` | ORACLE：dil4 + GT 镜面法线先验 + GT 掩码（`c2_480_gtnorm`，`make_gtnorm_sphere.py`）。oraclemask 只换了掩码，法线先验仍是 LiDAR 范围生成的：漏掉的镜面像素还是 StableNormal（虚像法线，对 GT 中位 76°）、边缘带置零跳过。和 oraclemask 的差值就是法线先验的代价 | 11-08 10:54 起，约 33 h |
 | 1 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_oracleall_off020` | ORACLE 全给（用户 11-08）：GT 法线先验 + GT 掩码 + msurf 曲面和范围都按 GT 球（`make_oracle_patch.py`，可见镜面半径 0.669 m = 镜框内缘，不外扩），反射 START_OFFSET 2 cm（`PYTHONPATH=build_variants/dst_off020/pkg`，启动日志第一行打印 tracer 路径）。看输入全对时右侧能到多少，是上限 | 11-09 13:43 跑完，结果见 RESULTS §5 |
 

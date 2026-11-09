@@ -5,6 +5,10 @@ For every camera with a LiDAR mirror mask (lidar_mirror_mask.py format: 255 inte
   box       box around the LiDAR mask (interior + band), padded by --box-pad of its size on every side
   box_pos   box + --npos positive points spread over the LiDAR interior eroded by --pos-erode px (farthest point sampling)
   box_pn    box_pos + --nneg negative points on a ring --neg-gap..--neg-gap+20 px outside the LiDAR mask (inside the padded box)
+  box_pos_mask  box_pos + the LiDAR mask as the coarse mask prompt (mask_input, low-res logits: interior +--mask-logit, band 0,
+            outside ---mask-logit, area-resized to SAM's low-res size), single output (2026-11-09)
+  box_pos_iter  box_pos twice: round 2 gets SAM's own best round-1 low-res logits as mask_input (SAM's iterative refinement), single output
+  mask      the LiDAR mask prompt alone (no box / points)
   text      text prompt --text (SAM 3 concept segmentation, no LiDAR prompt); the instance with the largest IoU with the LiDAR mask
 SAM point/box prompts (predict_inst) return 3 candidates; the one with the highest predicted score is kept.
 Output <out>/<variant>/<cam>/000000.png (255 = mirror) + <out>/metrics.json / metrics.txt; with --gt <blender persp dir> also
@@ -26,6 +30,8 @@ ap.add_argument('--box-pad', type=float, default=0.05)
 ap.add_argument('--npos', type=int, default=5); ap.add_argument('--pos-erode', type=int, default=25)
 ap.add_argument('--nneg', type=int, default=6); ap.add_argument('--neg-gap', type=int, default=40)
 ap.add_argument('--text', default='mirror')
+ap.add_argument('--fuse-px', type=int, default=40, help='metrics also for LiDAR interior | (SAM within this many px of the LiDAR mask)')
+ap.add_argument('--mask-logit', type=float, default=10.0, help='LiDAR mask prompt logit magnitude')
 ap.add_argument('--vis-step', type=int, default=24)
 ap.add_argument('--sam3-root', default=os.path.expanduser('~/SMBC/SAM3/sam3'))
 a = ap.parse_args()
@@ -128,14 +134,31 @@ for k, cam in enumerate(cams):
     box = pos = neg = None
     if has_l:
         box, pos, neg = prompts(lm, rng)
+        pp = lambda: (pos.astype(np.float32), np.ones(len(pos), int)) if len(pos) else (None, None)
+        low = None                                                     # box_pos low-res logits (best candidate)
         for v in VARIANTS:
             if v == 'text': continue
             pc = pl = None
             if v in ('box_pos', 'box_pn') and len(pos):
                 pc, pl = pos, np.ones(len(pos), int)
                 if v == 'box_pn' and len(neg): pc, pl = np.concatenate([pos, neg]), np.concatenate([pl, np.zeros(len(neg), int)])
-            m, s, _ = model.predict_inst(state, point_coords=None if pc is None else pc.astype(np.float32), point_labels=pl,
-                                         box=box[None], multimask_output=True)
+            if v in ('box', 'box_pos', 'box_pn'):
+                m, s, lo = model.predict_inst(state, point_coords=None if pc is None else pc.astype(np.float32), point_labels=pl,
+                                              box=box[None], multimask_output=True)
+                preds[v] = best(m, s)
+                if v == 'box_pos': low = lo[int(np.argmax(s))]
+        for v in VARIANTS:
+            if v not in ('box_pos_mask', 'box_pos_iter', 'mask'): continue
+            if low is None:                                            # low-res logits size from one box_pos call
+                m, s, lo = model.predict_inst(state, point_coords=pp()[0], point_labels=pp()[1], box=box[None], multimask_output=True)
+                low = lo[int(np.argmax(s))]
+            if v == 'box_pos_iter':                                    # round 2: SAM's own round-1 logits as the mask prompt
+                mi = low
+            else:                                                      # LiDAR mask as logits: interior +L, band 0, outside -L
+                val = np.where(lm == 255, a.mask_logit, np.where(lm == 128, 0.0, -a.mask_logit)).astype(np.float32)
+                mi = cv2.resize(val, low.shape[::-1], interpolation=cv2.INTER_AREA)
+            kw = dict(box=box[None], point_coords=pp()[0], point_labels=pp()[1]) if v != 'mask' else {}
+            m, s, _ = model.predict_inst(state, mask_input=mi[None], multimask_output=False, **kw)
             preds[v] = best(m, s)
     else:
         n_noprompt += 1
@@ -150,6 +173,9 @@ for k, cam in enumerate(cams):
         if v not in preds: preds[v] = np.zeros((H, W), bool)   # no LiDAR prompt in this view
         d = os.path.join(a.out, v, cam); os.makedirs(d, exist_ok=True)
         cv2.imwrite(os.path.join(d, '000000.png'), preds[v].astype(np.uint8) * 255)
+    if a.fuse_px > 0 and has_l:                                       # evaluation only: LiDAR interior + SAM within --fuse-px of the LiDAR mask
+        dl = cv2.dilate((lm > 0).astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * a.fuse_px + 1,) * 2)) > 0
+        for v in VARIANTS: preds[f'L+{v}'] = (lm == 255) | (preds[v] & dl)
     if g is not None:
         right = None
         if S is not None:
@@ -160,7 +186,7 @@ for k, cam in enumerate(cams):
     if a.vis_step and k % a.vis_step == 0:
         sc = 0.5; vis = cv2.resize(img, None, fx=sc, fy=sc, interpolation=cv2.INTER_AREA)
         tiles = []
-        for v in ['lidar'] + VARIANTS:
+        for v in ['lidar'] + VARIANTS + [f'L+{v}' for v in VARIANTS if f'L+{v}' in preds and v in ('box_pos', 'box_pos_mask', 'box_pos_iter')]:
             t = vis.copy().astype(np.float32); p = cv2.resize(preds[v].astype(np.uint8), (t.shape[1], t.shape[0]), interpolation=cv2.INTER_NEAREST) > 0
             t[p] = 0.6 * t[p] + 0.4 * np.array((0, 255, 0)); t = t.astype(np.uint8)
             if g is not None:
@@ -170,7 +196,7 @@ for k, cam in enumerate(cams):
             cs, _ = cv2.findContours(ll, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE); cv2.drawContours(t, cs, -1, (0, 255, 255), 1)
             if v != 'lidar' and v != 'text' and box is not None:
                 cv2.rectangle(t, tuple((box[:2] * sc).astype(int)), tuple((box[2:] * sc).astype(int)), (255, 255, 0), 1)
-                if v in ('box_pos', 'box_pn'):
+                if v in ('box_pos', 'box_pn', 'box_pos_mask', 'box_pos_iter'):
                     for x, y in pos: cv2.circle(t, (int(x * sc), int(y * sc)), 5, (0, 200, 0), -1)
                 if v == 'box_pn':
                     for x, y in neg: cv2.circle(t, (int(x * sc), int(y * sc)), 5, (0, 0, 255), -1)
@@ -180,18 +206,18 @@ for k, cam in enumerate(cams):
             cv2.putText(t, s, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 4, cv2.LINE_AA)
             cv2.putText(t, s, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 1, cv2.LINE_AA)
             tiles.append(t)
-        while len(tiles) % 3: tiles.append(np.zeros_like(tiles[0]))
-        rows = [np.concatenate(tiles[i:i + 3], 1) for i in range(0, len(tiles), 3)]
+        while len(tiles) % 4: tiles.append(np.zeros_like(tiles[0]))
+        rows = [np.concatenate(tiles[i:i + 4], 1) for i in range(0, len(tiles), 4)]
         cv2.imwrite(os.path.join(a.out, 'vis', f'{cam}.jpg'), np.concatenate(rows, 0), [cv2.IMWRITE_JPEG_QUALITY, 85])
     n_done += 1
     if n_done % 20 == 0: print(f'{n_done} views ({time.time() - t0:.0f} s)', flush=True)
 
 res = {}
 lines = [f'{n_done} views ({n_noprompt} with GT mirror but no LiDAR mask: prompt variants empty there)',
-         f'{"mask":12s} | {"all: P":>8s} {"R":>6s} {"IoU":>6s} {"mIoU":>6s} | {"right: P":>8s} {"R":>6s} {"IoU":>6s}']
+         f'{"mask":18s} | {"all: P":>8s} {"R":>6s} {"IoU":>6s} {"mIoU":>6s} | {"right: P":>8s} {"R":>6s} {"IoU":>6s}']
 for name, d in acc.items():
     res[name] = {}
-    row = f'{name:12s} |'
+    row = f'{name:18s} |'
     for key in ('all', 'right'):
         if key not in d: continue
         x = d[key]; P = x['tp'] / max(x['pred'], 1); R = x['tp'] / max(x['gt'], 1); I = x['tp'] / max(x['pred'] + x['gt'] - x['tp'], 1)

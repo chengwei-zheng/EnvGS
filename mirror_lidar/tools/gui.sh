@@ -26,7 +26,7 @@ list() {
         [ -d "$d" ] || continue
         g=$(basename "$(dirname "$d")"); n=$(basename "$d"); n=${n#envgs_}
         e=$(date -r "$d/latest.pt" '+%m-%d %H:%M' 2>/dev/null || true)
-        st=done; pgrep -f "evc-train .*exp_name=envgs/$g/envgs_$n( |$)" > /dev/null && st=training
+        st=done; pgrep -f "(evc-train|main.py -t train) .*exp_name=envgs/$g/envgs_$n( |$)" > /dev/null && st=training
         printf '%-10s %-12s %-9s %s\n' "$g" "${e:--}" "$st" "$n"
     done
 }
@@ -59,7 +59,7 @@ fi
 TM=data/trained_model/envgs/$G/envgs_$s
 [ -f $TM/latest.pt ] || { echo "no trained model in $TM" >&2; exit 1; }
 ep=$(date -r $TM/latest.pt '+%m-%d %H:%M')
-pgrep -f "evc-train .*exp_name=envgs/$G/envgs_$s( |$)" > /dev/null && echo "note: $s is still training: the viewer shows the checkpoint of $ep"
+pgrep -f "(evc-train|main.py -t train) .*exp_name=envgs/$G/envgs_$s( |$)" > /dev/null && echo "note: $s is still training: the viewer shows the checkpoint of $ep"
 
 TR=${TRACER:-$(grep -oE '_off0[0-9]+' <<< "$s" | tail -1 | tr -d _)}
 if [ -n "$TR" ] && [ "$TR" != installed ]; then
@@ -73,8 +73,8 @@ echo "viewer  configs/specs/$VIEWER.yaml   GPU ${GPU:-2}"
 echo "tracer  ${PKG:-installed}"
 [ $dry = 1 ] && exit 0
 
-if [ -z "$FORCE" ] && pgrep -f "evc-gui -c" > /dev/null; then
-    echo "another viewer is running (one at a time; close it or FORCE=1):" >&2; pgrep -af "evc-gui -c" | cut -c1-200 >&2; exit 1
+if [ -z "$FORCE" ] && pgrep -f "evc-gui -c|main.py -t gui" > /dev/null; then
+    echo "another viewer is running (one at a time; close it or FORCE=1):" >&2; pgrep -af "evc-gui -c|main.py -t gui" | cut -c1-200 >&2; exit 1
 fi
 source ~/miniconda3/etc/profile.d/conda.sh; conda activate envgs
 export DISPLAY=${DISPLAY:-:1} XAUTHORITY=${XAUTHORITY:-/run/user/1000/gdm/Xauthority}

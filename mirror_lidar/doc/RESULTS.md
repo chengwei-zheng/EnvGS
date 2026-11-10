@@ -1,6 +1,6 @@
 # 已生成的数据和重要结果
 
-更新 2026-11-07。按时间记录的实验过程在 `archive/EXPERIMENT_LOG_20261022-20261105.md`（10-22 到 11-05），
+更新 2026-11-10（走廊 c2_480 定稿）。按时间记录的实验过程在 `archive/EXPERIMENT_LOG_20261022-20261105.md`（10-22 到 11-05），
 更早的在 `mirror_lidar/experiments/*.json` 和 `archive/HANDOFF_EnvGS_20261014.md`；11-06 以后的过程写在本文件和 `NEXT_STEPS.md` 里。
 
 ## 1. 场景和数据
@@ -20,7 +20,7 @@ EnvGS 场景名就是 `data/datasets/<组>/<名>` 的路径。
 | `mirror_b/f300` | proj_indoor_mirror_b_framed / dataset_f300 | 3 cm 厚平面镜 + 木框 | **房间平面镜定稿场景** |
 | `mirror_b/cv300` | proj_indoor_mirror_b_convex / dataset_cv300 | f300 换成 R 1 m 凸面镜 | **房间凸面镜定稿场景** |
 | `corridor/c480` | proj_indoor_corridor_convex / dataset_c480 | 走廊墙角凸面镜 R 1 m | 走廊 v1，视角覆盖差 |
-| `corridor/c2_480` | proj_indoor_corridor_convex2 / dataset_c2_480 | 走廊凸面镜 R 1.125 m，宽 1.35 m | **当前重点**（11-04 起） |
+| `corridor/c2_480` | proj_indoor_corridor_convex2 / dataset_c2_480 | 走廊凸面镜 R 1.125 m，宽 1.35 m | **走廊定稿场景**（11-04 到 11-10，用户 11-10 确认） |
 
 GT 球面：
 - cv300、c480 在各自工程目录的 `mirror_sphere.json`（c480 中心 (−0.02669, 2.42669, 2.25706)，R 1.0）；
@@ -37,6 +37,7 @@ GT 球面：
 | `datasets/<组>/<场景>_lidarnorm*_debug/` | 拟合预览图、`eval.json` | |
 | `datasets/<组>/<场景>_gtnorm/`、`_nmask/` | oracle / 消融法线先验（GT 镜面法线、镜面置黑） | |
 | `datasets/corridor/c2_480_oracle_mirror_masks/` | GT 镜面掩码（oracle，11-07） | |
+| `datasets/corridor/c2_480_lidarnorm_vote{,_b03}/` | **不用 GT 的定稿输入**（11-09）：投票范围曲面（`mirror_extent_vote.py`）生成的法线先验和掩码；`_b03` 边界带 0.3 倍（`--band 0.3`），fitted 定稿组用它 | |
 | `datasets/mirror_b/r300lp_lidarnorm_linit/` | LiDAR 点云初始化 | |
 | `datasets/mirror_b/r300lp_lidar_depth_{mplane,nomirror}/` | 镜面 LiDAR 样本换成拟合平面深度 / 去掉 | |
 | `datasets/envgs/`、`refnerf/`、`mmw421_samsung/` | 官方数据（audi 复现过）/ 没用 | |
@@ -71,6 +72,10 @@ GT 球面：
 | `corridor/mirror_lr_c2_480_scons_20261106/` | 一致约束各组：`bins_*`、`depth_*`、`depth_extent*`（按范围内外分）、`mask_lr.txt`（掩码按位置的召回） |
 | `corridor/prep_check_c2_480_20261107/` | 预处理检查视频（`vis_mirror_prep.py`）：曲面初始化投影（原范围 / 外扩 4 cm）、LiDAR 掩码 + GT 轮廓、oracle 掩码 |
 | `corridor/spline_normal_c2_480_20261106/`、`_scons_20261107/` | 学到的 B 样条对 GT 球面的法线误差（`summary.txt`、`normal_err_0to5deg.png`、`extent_vs_gt.png`） |
+| `corridor/mirror_surface_c2_480_oracle_20261108/` | oracleall 用的 GT 球面 patch（`make_oracle_patch.py`） |
+| `corridor/sam_mask_c2_480_20261109/`、`sam_mask_c2_480_maskprompt_20261109/` | SAM 3 镜面掩码（LiDAR 提示），`metrics.txt`、`vis_zoom/`；定稿用 `box_pos_iter` |
+| `corridor/mirror_extent_vote_c2_480_20261109/v3_pad25_frac03/` | **多视角投票的镜面范围**：`patch0.npz`（fitted 定稿组的 msurf 曲面）、`report.txt`（对 GT 镜面的格子 P/R/IoU、每 30° 扇区的边缘缺口） |
+| `corridor/mask_compare_c2_480_20261109/`、`mask_compare_c2_480_b03_20261109/` | 各掩码对 GT 的比较（`compare_mirror_masks.py`）：`report.txt`、叠加图 |
 
 **11-08 清理磁盘**（清单 `data/logs/cleanup_candidates_20261108.txt`）：
 - 删了所有 `rawdepth*` / `rawspec`（`export_raw.py` 的中间产物，已经转成 `eval_npz`；重跑 `eval_*.sh` 会重新生成）。
@@ -105,6 +110,8 @@ GT 球面：
 10. **房间场景定稿**（11-05，用户确认）：msurf B 样条 + LiDAR 深度。见下表。
 11. **走廊 c480 上限**（11-05）：GT 球面法线（oracle）也只有 27.6 dB，瓶颈在视角覆盖（镜子挂墙角、只在镜前拍、镜子在画面里小 10 倍）。于是换成 c2_480。
 12. **走廊 c2_480**（11-06 / 11-07）：msurf + LiDAR + 高斯与曲面一致约束，镜面 21.8 → 28.7。见下表。
+13. **走廊 c2_480 定稿**（11-10，用户确认）：不用 GT，只靠 LiDAR + SAM 掩码投票得到镜面范围（`fitted_voteb03_off020`），
+    几何接近全给 GT 的 oracle（法线 >5° 16% vs 13%），镜面 PSNR 28.88、LPIPS-a 0.125（oracle 29.96 / 0.100，基线 21.78 / 0.491）。见 §5。
 
 ## 3. 房间场景定稿（11-05）
 
@@ -136,7 +143,7 @@ GT 球面：
   - 镜子在画面里约小 10 倍（每视角镜面像素中位 89k vs 925k）；
   - 视角集中在沿走廊的两个方向（偏离镜轴 p90 43° vs 68°）。
 
-## 5. 走廊 c2_480（11-04 起，当前重点）
+## 5. 走廊 c2_480（11-04 到 11-10，已定稿）
 
 评估：`data/logs/eval_c2_480.sh`（60 个验证视角）；分段统计用 `tools/mirror_lr_bins.py`。
 
@@ -149,8 +156,10 @@ GT 球面：
 | `..._scons_dist10`（A + 镜面 distortion 10，B） | 33.54 | 0.819 / 0.165 / 27.12 | 23.8 / 27.7 / 30.3 / 29.4 / 30.9 / 28.7 | −3.2 cm |
 | `..._scons_dil4`（A + 范围外扩 4 cm） | 33.99 | 0.847 / 0.126 / 29.00 | 25.8 / 32.2 / 33.4 / 33.2 / 32.6 / 29.1 | −1.3 cm |
 | `..._scons_dil4_oraclemask`（ORACLE：dil4 + GT 镜面掩码） | 33.58 | 0.833 / 0.159 / 28.11 | 23.6 / 27.4 / 30.3 / 29.1 / 31.3 / 30.2 | −1.0 cm |
-| `..._scons_dil4_oraclenormmask`（ORACLE：dil4 + GT 法线先验 + GT 掩码） | 在跑（GPU3，11-08 10:54 起，11-09 14:40 到 epoch 79/120，预计 11-10 凌晨训完） | | | |
-| `..._scons_oracleall_off020`（ORACLE：GT 法线先验 + GT 掩码 + GT 曲面和范围，反射 offset 2 cm） | **34.53** | **0.868 / 0.100 / 29.99** | 27.3 / 29.6 / 32.7 / 32.7 / 32.5 / 31.3 | −0.0 cm |
+| `..._scons_dil4_oraclenormmask`（ORACLE：dil4 + GT 法线先验 + GT 掩码） | 34.08 | 0.852 / 0.123 / 29.45 | 25.4 / 32.3 / 32.6 / 33.4 / 32.7 / 29.6 | −1.3 cm |
+| `..._scons_oracleall`（ORACLE：GT 法线先验 + GT 掩码 + GT 曲面和范围，反射 offset 6 cm） | 34.21 | 0.862 / 0.111 / 29.95 | 27.7 / 30.5 / 32.3 / 32.9 / 33.5 / 30.5 | −0.4 cm |
+| `..._scons_oracleall_off020`（同上，反射 offset 2 cm） | **34.53** | **0.868 / 0.100 / 29.99** | 27.3 / 29.6 / 32.7 / 32.7 / 32.5 / 31.3 | −0.0 cm |
+| **`..._scons_fitted_voteb03_off020`（定稿，不用 GT：投票范围曲面 + 其法线先验和掩码（边界带 0.3），offset 2 cm）** | 34.14 | 0.855 / 0.125 / 28.88 | 26.2 / 27.5 / 30.6 / 33.1 / 32.5 / 30.0 | −0.2 cm |
 
 \* u 从 −0.6 到 +0.6 m，第一段 u < −0.4，是 **viewer 图像右侧**。
 \** 右侧（u < −0.4，范围内）的渲染深度减曲面交点，负值表示高斯在曲面前方。
@@ -169,6 +178,38 @@ GT 球面：
   - **oracleall_off020（输入全给 GT）是目前 c2_480 最好的一组**：全图 34.53，镜面 LPIPS-a 0.100；最右段 27.3（dil4 25.8），最左段 31.3（29.1）；右侧深度偏差 −1.3 → −0.0 cm，> 2 cm 的比例 45% → 16%。
     但右侧次外段 29.6（dil4 32.2）。输入全对时最右段仍比中部低约 5 dB，所以右侧差的主因不在输入（视角少、掠射角大）。曲面范围、法线先验、2 cm offset 三个因素混在一起，没拆开。
 - **曲面学得很准**：B 样条对 GT 球面的法线误差中位 0.07°（初值 0.15°）。所以剩下的问题在高斯，不在曲面。
+- **11-10 oracle 收尾**：
+  - oraclenormmask（GT 法线先验 + GT 掩码）比 dil4 好一点（镜面 29.08 → 29.45），比只换掩码的 oraclemask 好得多：oraclemask 变差是掩码和法线先验对不上造成的。最右段仍 25.4，右侧深度偏差仍 −1.3 cm：右侧靠 2D 输入补不上，要靠曲面范围。
+  - offset 2 cm 对 6 cm：镜面 PSNR 一样（29.99 vs 29.95），LPIPS-a 0.100 vs 0.111，法线 >5° 12.6% vs 24.9%，右侧深度偏差 −0.0 vs −0.4 cm。定稿用 2 cm。
+  - 两组 oracle 同一分段差到 1 dB（右侧次外段 29.6 vs 30.5、左二段 32.5 vs 33.5），这是单次训练的波动量级。
+
+### c2_480 定稿：不用 GT 的 fitted 组（11-09 / 11-10）
+
+输入的做法（全部只用 LiDAR + RGB）：
+1. **SAM 3 镜面掩码**（`sam_mirror_mask.py`）：LiDAR 掩码做提示（box + 正点 + 迭代），和 LiDAR 掩码融合（L+sam）。
+2. **多视角投票镜面范围**（`mirror_extent_vote.py`，`v3_pad25_frac03`）：LiDAR 拟合的二次曲面外推 25 cm，每个 1 cm 格子在所有看得到它的训练视角里按 2D 掩码投票（按入射角和像素尺度加权，阈值 0.3）；LiDAR 单回波占多数的格子否决（镜框、墙：多回波比例中位 0.01，镜面边缘 0.76）。
+   - 对 GT 镜面（半径 0.669 m）：格子 P 100% / R 97.1% / IoU 97.1%（LiDAR 范围 84.8%、dil4 86.2%），每个扇区边缘缺口 0.6–2.6 cm（LiDAR 范围顶部缺 18.8 cm、右侧 3.9 cm）。
+   - 曲面法线对 GT 中位 0.15°，外圈 5 cm 0.84°；径向位置误差中位 −0.2 mm。
+3. **法线先验和掩码从投票曲面重新生成**（`lidar_mirror_normals_curved.py --patch` + `lidar_mirror_mask.py --band 0.3`）。
+
+掩码对 GT（`compare_mirror_masks.py`，301 个有镜子的视角；内部 = 255，"+带" 把边界带也算命中）：
+
+| 掩码 | P | R | IoU | mIoU | 右侧 R | 轮廓到 GT 边缘平均 px |
+|---|---|---|---|---|---|---|
+| LiDAR（旧） | 99.19 | 91.03 | 90.37 | 81.95 | 75.4 | 45.4 |
+| L+sam | 94.85 | 97.35 | 92.46 | 91.30 | 92.7 | 19.8 |
+| vote（默认带宽） | 99.98 | 93.90 | 93.88 | 89.51 | 85.3 | 35.8 |
+| vote +带 | 98.21 | 99.19 | 97.43 | 94.80 | 97.6 | 7.0 |
+| **vote_b03** | 99.92 | 96.80 | 96.73 | 95.26 | 91.2 | 9.1 |
+| **vote_b03 +带** | 99.64 | 98.29 | 97.94 | 97.38 | 95.0 | 5.2 |
+
+- SAM 融合的掩码有 3–4% 远离镜缘的误检（P 94.85）；投票后基本没有误检。
+- vote_b03 在训练视角按 u 分段的内部覆盖：最右段 91.2%（3.8% 在边界带、3.0% 是边缘 10 px 内、2.1% 远离边缘漏掉），其余各段 95.6–98.1%。
+
+**fitted 组结果**（表中最后一行）：
+- 几何接近 oracle：镜面法线中位 2.19°、>5° 16.2%（oracleall_off020 2.00° / 12.6%，oracleall 2.31° / 24.9%，dil4 2.41° / 27.6%）；镜面深度 |err| > 2 cm 最右段 20.9%（16.1% / 29.5%，dil4 42%）；渲染镜面 99% 落在投票范围内；训练末 `msurf_cons_frac` 1.0，学到的曲面对 GT 中位 0.07°。
+- 画质：全图 34.14，镜面 28.88 / LPIPS-a 0.125，和 dil4 相当，比 oracle 低约 1 dB。差距在 u −0.4..0 两段（−2.1 dB）；这两段的掩码覆盖和左侧一样（97–98%）、深度也不比 oracle 差，所以不是掩码造成的，可能是单次训练波动（两组 oracle 之间也有 1 dB），没再拆。
+- 用户 11-10 看过 viewer，认为结果可以，**c2_480 到此定稿**。viewer：`tools/gui.sh fitted_voteb03_off020`。
 
 ## 6. viewer 脚本（`mirror_lidar/tools/`，在 GPU2 上开，关窗不保存）
 

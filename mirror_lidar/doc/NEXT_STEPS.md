@@ -1,43 +1,29 @@
 # 现状与待做
 
-更新 2026-11-07。结果见 `RESULTS.md`。10-22 到 11-05 的完整实验日志在 `archive/EXPERIMENT_LOG_20261022-20261105.md`。
+更新 2026-11-10。结果见 `RESULTS.md`。10-22 到 11-05 的完整实验日志在 `archive/EXPERIMENT_LOG_20261022-20261105.md`。
 
 ## 现状
 
 - **房间场景已定稿**（11-05，用户确认）：可学 B 样条显式镜面 + LiDAR 第一回波深度。f300 平面镜镜面 PSNR 38.64（基线 28.56），cv300 凸面镜 34.63（基线 24.45）。
-- **走廊 c2_480 是当前重点**：
-  - 最好的组是 `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons`（A：+ 高斯与曲面一致约束），镜面 28.71（基线 21.78）。
-  - 镜子中部约 32–33 dB，右侧（viewer 图像右边）最外一段只有 25.3，原因是 LiDAR 范围和掩码覆盖不到。
-
-## 在跑（11-07）
-
-| GPU | run | 问题 | 预计 |
-|---|---|---|---|
-| 0 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclemask` | ORACLE：dil4 + GT 镜面掩码。和 dil4 的差值就是掩码在右侧漏掉 26% 的代价 | 11-09 03:58 跑完，结果见 RESULTS §5 |
-| 3 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_dil4_oraclenormmask` | ORACLE：dil4 + GT 镜面法线先验 + GT 掩码（`c2_480_gtnorm`，`make_gtnorm_sphere.py`）。oraclemask 只换了掩码，法线先验仍是 LiDAR 范围生成的：漏掉的镜面像素还是 StableNormal（虚像法线，对 GT 中位 76°）、边缘带置零跳过。和 oraclemask 的差值就是法线先验的代价 | 11-08 10:54 起，约 33 h |
-| 1 | `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_oracleall_off020` | ORACLE 全给（用户 11-08）：GT 法线先验 + GT 掩码 + msurf 曲面和范围都按 GT 球（`make_oracle_patch.py`，可见镜面半径 0.669 m = 镜框内缘，不外扩），反射 START_OFFSET 2 cm（`PYTHONPATH=build_variants/dst_off020/pkg`，启动日志第一行打印 tracer 路径）。看输入全对时右侧能到多少，是上限 | 11-09 13:43 跑完，结果见 RESULTS §5 |
-
-**dil4 已训完（11-08 00:17）**：镜面 PSNR 28.71 → 29.00、LPIPS-a 0.129 → 0.126，全图 34.26 → 33.99。
-最右段只 25.3 → 25.8，没补上；最左段 30.6 → 29.1 反而变差（预处理检查视频里看到外扩后左侧范围压到镜框上）；右侧深度偏差 −0.8 → −1.3 cm。
-单靠外扩范围不够，等 oracle 掩码组看掩码的影响。
-
-训完自动跑：`eval_c2_480.sh`、`mirror_lr_bins.py`、`mirror_lr_depth.py`；oracle 组还会跑 `mirror_lr_depth_extent.py`（外扩 4 格）。
-结果写到 `data/result/envgs/corridor/mirror_lr_c2_480_scons_20261106/`。
-
-注意：外扩 4 cm 后，右缘仍有 ≤ 1.5 cm 在范围外。这一条即使给了 GT 掩码也没有曲面命中，不受一致约束。
+- **走廊 c2_480 已定稿**（11-10，用户确认，RESULTS §5）：
+  - 定稿组 `envgs_c2_480_msurf_spline_learn_ldepth005_dz5_scons_fitted_voteb03_off020`，不用 GT：
+    msurf B 样条 + LiDAR 深度 + 高斯与曲面一致约束，曲面范围由 LiDAR + SAM 掩码多视角投票得到，法线先验和掩码从投票曲面生成（边界带 0.3），反射 offset 2 cm。
+  - 镜面 PSNR 28.88、LPIPS-a 0.125（基线 21.78 / 0.491；全给 GT 的 oracleall_off020 29.99 / 0.100）。几何接近 oracle。
+  - viewer：`tools/gui.sh fitted_voteb03_off020`。
+- **下一个场景**：走廊加大号金属圆柱（blender 仓库 `proj_indoor_corridor_pillar`，R 0.9 m 钢柱，粗糙度 0.05，LiDAR 反射率 0.6、`diffuse_scatter` 0.02），
+  400 帧数据集 `dataset_p400` 11-10 在渲染。
 
 ## 待做
 
-### 走廊 c2_480（近期）
-1. **对比 A / dil4 / dil4_oraclemask**，看这几项：
-   - 镜面指标；
-   - 按 u 分段，特别是最右一段；
-   - 范围内外的深度偏差；
-   - 镜框和镜缘的质量：外扩后镜面面元会不会伸出镜缘、范围外扩到镜框上的那圈反射法线有没有影响。
-2. 按结果决定：
-   - **掩码差距大**：用外扩后的范围重新生成 LiDAR 掩码，或按边缘自适应外扩（看得少的一侧多扩）。
-   - **范围差距大**：改进范围估计。顶部缺约 22 cm，可以用曲面外推加镜框边缘检测。
-3. 给最好的组写 viewer 脚本（参照 `tools/gui_c2_480_msurf_ldepth.sh`）。
+### 走廊 c2_480（定稿后留下的问题，不急）
+- fitted 比 oracle 镜面低约 1 dB，集中在 u −0.4..0 两段；掩码覆盖在这两段正常，可能是单次训练波动。要确认可以换种子重跑 fitted。
+- 最右段（u < −0.4）所有组都只有 25–27 dB，输入全给 GT 也一样：视角少、掠射角大。
+- vote_b03 掩码离边缘较远的漏标约 1.1%（多在最右段），原因没查（可能是投影时 uncertain / occluded 的标记）。
+
+### 柱子场景（下一步）
+- 数据渲完后：检查 LiDAR 回波（柱面应同时有表面回波和鬼影）、准备 EnvGS 数据（COLMAP、StableNormal、LiDAR 深度）。
+- 按 c2_480 定稿流程跑：LiDAR 曲面拟合 → SAM 掩码 → 投票范围 → fitted 组；同时跑 oracle 对照。
+  柱面是圆柱（只在一个方向弯），注意二次曲面 / B 样条拟合和投票范围对竖长镜面的处理。
 
 ### 方法（中期）
 - **曲面位姿可学**：把曲面拆成"位姿 6 + 形状"，从人为加的标定误差出发，测能不能恢复。
@@ -56,7 +42,7 @@
   - 外参误差；
   - LiDAR 与相机时间偏移（最近帧 + 位姿插值）；
   - 干净镜面（表面回波很少）。
-- 真机标定参数见记忆 `reference_th_s02_real_calibration`：真机镜面约 90% 区域有表面回波 + 鬼影两个回波，仿真只有约 0.2%。
+- 真机标定参数见记忆 `reference_th_s02_real_calibration`：真机镜面约 90% 区域有表面回波 + 鬼影两个回波，仿真原来只有约 0.2%；之后的场景（scatter002 版本起）镜面 LiDAR 材质设 `diffuse_scatter` 0.02，有表面回波。
 
 ### 搁置的（试过没收益，或者被更好的方法盖过）
 - LiDAR 点云初始化（linit）：收益被 LiDAR 深度监督盖过去。用 LiDAR 法线初始化面元朝向还没试。
@@ -64,4 +50,5 @@
   全图或镜面内 2DGS distortion、删镜前面元（prune）。
 
 ### 杂项
-- 11-08 已本地提交（3fac242，未 push）。`build_variants/`（START_OFFSET 编译变体）和子模块 diff-surfel-tracing 的 validationMode 改动没提交。
+- 都只本地提交，没 push。`build_variants/`（START_OFFSET 编译变体）和子模块 diff-surfel-tracing 的 validationMode 改动没提交。
+- 掩码按 u 分段统计（11-10）用的是临时脚本，没进仓库；要复现可以在 `compare_mirror_masks.py` 里加分段。

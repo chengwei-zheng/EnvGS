@@ -468,7 +468,7 @@ def main():
     if not a.fit_only and os.path.exists(os.path.join(src, 'envs', 'points3D.ply')):
         shutil.copy2(os.path.join(src, 'envs', 'points3D.ply'), os.path.join(out, 'envs', 'points3D.ply'))
 
-    names = sorted(os.listdir(os.path.join(src, 'normals')))
+    names = sorted(os.listdir(os.path.join(src, 'images' if a.fit_only else 'normals')))   # --fit-only: StableNormal may not be done yet
     fe, fi = cv2.FileStorage(os.path.join(src, 'extri.yml'), 0), cv2.FileStorage(os.path.join(src, 'intri.yml'), 0)
     Rc = {n: fe.getNode(f'Rot_{n}').mat() for n in names}
     Tc = {n: fe.getNode(f'T_{n}').mat().ravel() for n in names}
